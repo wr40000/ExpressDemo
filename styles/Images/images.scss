@@ -1,0 +1,59 @@
+@import '../ConstStyle.scss';
+
+body{
+    background: $primary_background_color;
+    // overflow-x: hidden;
+    .page_title{
+        width: 100%;    
+        height: 7rem;
+        margin-top: -1rem;
+        font-size: 4rem;
+        padding-left: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: start;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        -webkit-text-stroke: 0.08rem $primary_color;
+    }
+    .setting{
+        width: 100%;
+        height: 10rem;
+        background: skyblue;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        .audio_container{
+            height: 100%;
+            width: 30rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            // justify-self: end;
+            figure{
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: start;
+                align-items: center;
+                figcaption{
+                    padding-left: 1rem;
+                    margin-bottom: 1rem;
+                    font-size: 1.6rem;
+                    font-weight: 100;
+                    letter-spacing: 0.1rem;
+                }
+            }
+        }
+    }
+    .image_container{
+        column-count: 5;
+        .image_item{
+            width: 100%;
+            transition: 0.2s linear;
+        }
+        .image_item:hover{
+            box-shadow: 0px 0px 20px black;
+            transform: scale(1.02);
+        }
+    }
+}

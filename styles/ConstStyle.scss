@@ -1,0 +1,8 @@
+$primary_color: #007bff;
+$primary_background_color: linear-gradient(90deg, rgba(135, 207, 235, 0.459),rgba(255, 166, 0, 0.507));
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-size: 62.5%; /* 好方法 */
+}

@@ -1,0 +1,30 @@
+.index_container{
+    height: 100vh;
+    width: 100vw;
+    background: linear-gradient(45deg, #D0E7D2, #B0D9B1,#79AC78,#618264);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .index_head_container{
+        height: 12rem;
+        width: 30rem;
+        background: linear-gradient(45deg, #8EACCD, #D7E5CA,#F9F3CC,#D2E0FB);
+        font-size: 3rem;
+        display: flex;
+        align-items: start;
+        justify-content: space-around;
+        flex-direction: column;
+        letter-spacing: 0.2rem;
+        border-radius: 3rem;
+        transition: all 0.3s linear;
+        .index_head_item{
+            margin-left: 2rem;
+            a{
+                font-size: 1.8rem;
+            }
+        }
+    }
+    .index_head_container:hover{
+        transform: scale(1.1);
+    }
+}

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/ConstStyle.css">
+    <link rel="stylesheet" href="/css/Images/images.css">
+    <title><%= title %></title>
+</head>
+<body>
+    <div class="page_title">壁纸</div>
+    <div class="setting">
+        <div class="change_images">change_images</div>
+        <div class="audio_container">
+            <figure>
+                <figcaption>悬溺: 葛东琪</figcaption>
+                <audio controls src="/mp3/悬溺.mp3">
+                    <a href="https://lj-sycdn.kuwo.cn/2e28a098887430a407ef68546ac00a0f/64fc5dc8/resource/n2/28/21/4126299374.mp3?bitrate$128&amp;format$mp3&amp;type$convert_url2"> Download audio </a>
+                </audio>
+            </figure>
+        </div>
+    </div>
+
+    <!-- Display Images -->
+    <div class="image_container">
+        <% images.forEach(function(image) { %>
+            <img class="image_item" src="/images/壁纸/萧容鱼&沈幼楚/<%= image %>" alt="Image">
+        <% }); %>
+    </div>
+</body>
+</html>
