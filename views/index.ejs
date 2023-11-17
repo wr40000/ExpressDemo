@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/ConstStyle.css">
     <link rel="stylesheet" href="/css/index/index.css">
-    <link rel="icon" type="image/svg+xml" 
-    href="/images/Terraria/宠物/Black_Cat_(broom).webp"/>
-    <title><%= title %></title>
+    <link rel="icon" type="image/svg+xml" href="/images/Terraria/宠物/Black_Cat_(broom).webp" />
+    <title>
+        <%= title %>
+    </title>
 </head>
+
 <body>
     <div class="index_container">
         <div class="index_head_container">
@@ -19,9 +22,123 @@
                 Link to <a href="./images">/images</a>
             </div>
             <div class="index_head_item">
-                Link to <a href="./mysql">/mysql</a> 
-            </div>                    
+                Link to <a href="./mysql">/mysql</a>
+            </div>
         </div>
+        <canvas></canvas>
     </div>
+    <script type="module">
+        // initialize webgpu device & config canvas context
+        async function initWebGPU(canvas) {
+            if (!navigator.gpu)
+                throw new Error('Not Support WebGPU')
+            const adapter = await navigator.gpu.requestAdapter({
+                powerPreference: 'high-performance'
+                // powerPreference: 'low-power'
+            })
+            if (!adapter)
+                throw new Error('No Adapter Found')
+            const device = await adapter.requestDevice()
+            const context = canvas.getContext('webgpu')
+            const format = navigator.gpu.getPreferredCanvasFormat()
+            const devicePixelRatio = window.devicePixelRatio || 1
+            canvas.width = canvas.clientWidth * devicePixelRatio
+            canvas.height = canvas.clientHeight * devicePixelRatio
+            const size = { width: canvas.width, height: canvas.height }
+            context.configure({
+                // json specific format when key and value are the same
+                device, format,
+                // prevent chrome warning
+                alphaMode: 'opaque'
+            })
+            return { device, context, format, size }
+        }
+        // create a simple pipiline
+        async function initPipeline(device, format) {
+            const descriptor = {
+                layout: 'auto',
+                vertex: {
+                    module: device.createShaderModule({
+                        // code: triangleVert
+                        code: `
+                            @vertex
+                            fn main(@builtin(vertex_index) VertexIndex : u32) -> @builtin(position) vec4<f32> {
+                                var pos = array<vec2<f32>, 3>(
+                                    vec2<f32>(0.0, 0.5),
+                                    vec2<f32>(-0.5, -0.5),
+                                    vec2<f32>(0.5, -0.5)
+                                );
+                                return vec4<f32>(pos[VertexIndex], 0.1, 1.0);
+                            }
+                `
+                    }),
+                    entryPoint: 'main'
+                },
+                primitive: {
+                    topology: 'triangle-list' // try point-list, line-list, line-strip, triangle-strip?
+                },
+                fragment: {
+                    module: device.createShaderModule({
+                        // code: redFrag
+                        code: `
+                        @fragment
+                        fn main(@builtin(position) pos: vec4<f32> ) -> @location(0) vec4<f32> {
+                            return vec4<f32>(0, 1.0, 0.0, 1.0);
+                        }
+                        `
+                    }),
+                    entryPoint: 'main',
+                    targets: [
+                        {
+                            format: format
+                        }
+                    ]
+                }
+            }
+            return await device.createRenderPipelineAsync(descriptor)
+        }
+        // create & submit device commands
+        function draw(device, context, pipeline) {
+            const commandEncoder = device.createCommandEncoder()
+            const view = context.getCurrentTexture().createView()
+            const renderPassDescriptor = {
+                colorAttachments: [
+                    {
+                        view: view,
+                        clearValue: { r: 0, g: 0, b: 0, a: 1.0 },
+                        loadOp: 'clear', // clear/load
+                        storeOp: 'store' // store/discard
+                    }
+                ]
+            }
+            const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor)
+            passEncoder.setPipeline(pipeline)
+            // 3 vertex form a triangle
+            passEncoder.draw(3)
+            passEncoder.end()
+            // webgpu run in a separate process, all the commands will be executed after submit
+            device.queue.submit([commandEncoder.finish()])
+        }
+
+        async function run() {
+            const canvas = document.querySelector('canvas')
+            if (!canvas)
+                throw new Error('No Canvas')
+            const { device, context, format } = await initWebGPU(canvas)
+            const pipeline = await initPipeline(device, format)
+            // start draw
+            draw(device, context, pipeline)
+
+            // re-configure context on resize
+            window.addEventListener('resize', () => {
+                canvas.width = canvas.clientWidth * devicePixelRatio
+                canvas.height = canvas.clientHeight * devicePixelRatio
+                // don't need to recall context.configure() after v104
+                draw(device, context, pipeline)
+            })
+        }
+        run()
+    </script>
 </body>
+
 </html>
