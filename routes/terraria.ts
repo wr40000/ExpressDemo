@@ -3,11 +3,13 @@ var path = require('path');
 const fs = require("node:fs/promises");
 var router = express.Router();
 
+// 读取图片目录  server.log
+let imageDir1 = path.resolve(__dirname, '../../../../Terraria/TMLserver/tModLoader-Logs/server.log'); // 你的图片目录路径
+// JSON 文件路径
+const countAllPlayerFilePath = path.resolve(__dirname, '../public/jsonServerTML/countAllPlayer.json');
+
 /* GET images page. */
 router.get('/', async function (req, res, next) {
-  // 读取图片目录  server.log
-  let imageDir1 = path.resolve(__dirname, '../../../../Terraria/TMLserver/tModLoader-Logs/server.log'); // 你的图片目录路径
-
   try {
     const data = await fs.readFile(imageDir1, 'utf8');
     // 正则表达式
@@ -29,11 +31,12 @@ router.get('/', async function (req, res, next) {
     // 创建一个空对象来存储用户出现的次数
     const countJoin = {};
     const countLeave = {};
-    // 总用户
-    const countAllPlayer = new Set(["随风-灾厄死亡", "biti", "川贝"]);
-    // 在线用户
-    const onlinePlayer = new Set()
 
+    let onlinePlayer = new Set();
+
+    // 读取 countAllPlayer.json 文件
+    const countAllPlayerData = await fs.readFile(countAllPlayerFilePath, 'utf8');
+    const countAllPlayer = new Set(JSON.parse(countAllPlayerData));
 
     // 遍历用户，计算在线用户
     for (const str of usernamesLeave) {
@@ -43,15 +46,17 @@ router.get('/', async function (req, res, next) {
     for (const str of usernamesJoin) {
       countJoin[str] = (countJoin[str] || 0) + 1;
     }
+    
     for (const str of usernamesJoin) {
       countAllPlayer.add(str)
-      if(countJoin[str] > countLeave[str]){        
+      if (countJoin[str] > (countLeave[str] || 0)) {
         onlinePlayer.add(str)
       }
     }
 
-    // console.log(countAllPlayer, onlinePlayer);
-    
+    // 更新 countAllPlayer.json 文件
+    await fs.writeFile(countAllPlayerFilePath, JSON.stringify(Array.from(countAllPlayer)));
+
     res.render('terraria', { terraria: { onlinePlayer, countAllPlayer } });
   } catch (err) {
     console.error(err);
