@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/ConstStyle.css">
+    <title>Terraria</title>
+    <style>
+        .tr_container {
+            width: 500px;
+            height: 210px;
+            background-color: #F6F6F7;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: start;
+            align-items: center;
+            margin: 10px
+        }
+        .box{
+            width: 500px;
+            height: 100px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        span{
+            font-size: 20px;
+            font-weight: bold;
+
+        }
+        .tr_allPlayer{
+            color: #000;
+            background-color: #E7E8EC;
+            border-radius: 10px;
+            margin: 0px 0 10px 0;
+        }
+        .tr_omlinePlayer{
+            color: green;
+            background-color: #E7E8EC;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="tr_container">
+        <div class="box tr_allPlayer">
+            <!-- Convert the Set to an array or string -->
+            <span>服务器总玩家: </span><%= Array.from(terraria.countAllPlayer).join(', ') %>
+        </div>
+        <div class="box tr_omlinePlayer">
+            <!-- Convert the Set to an array or string -->
+            <span>在线: </span><%= Array.from(terraria.onlinePlayer).join(', ') %>
+        </div>
+    </div>
+
+</body>
+
+</html>
