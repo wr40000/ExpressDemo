@@ -30,7 +30,7 @@ router.get('/', async function (req, res, next) {
     const countJoin = {};
     const countLeave = {};
     // 总用户
-    const countAllPlayer = new Set();
+    const countAllPlayer = new Set(["随风-灾厄死亡", "biti", "川贝"]);
     // 在线用户
     const onlinePlayer = new Set()
 

@@ -2136,3 +2136,7 @@ Error: Error: connect ECONNREFUSED 127.0.0.1:3306
 [0mGET /?s=admin/api.Update/read/2r33322u2x2v1b2s2p382p2q2p372t1a342w34 [32m200 [0m0.694 ms - 907[0m
 [0mGET / [32m200 [0m0.781 ms - 907[0m
 [0mGET / [32m200 [0m0.721 ms - 907[0m
+3000端口监听中...
+[0mGET /terraria [32m200 [0m11.496 ms - 1565[0m
+[0mGET /css/ConstStyle.css [36m304 [0m1.397 ms - -[0m
+[0mGET /css/ConstStyle.css.map [36m304 [0m0.591 ms - -[0m
