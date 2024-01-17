@@ -36,7 +36,9 @@ router.get("/", function (req, res, next) {
 
 // 渲染 Markdown 文件为 HTML
 router.get("/:filename", (req, res) => {
+  
   const filename = req.params.filename;
+  console.log(filename);
   const filenameExcludemd = filename.slice(0, -3);
   const markdownPath = path.join(path.resolve(__dirname, "../public/notes"), `${filename}`);
   // 检查文件是否存在

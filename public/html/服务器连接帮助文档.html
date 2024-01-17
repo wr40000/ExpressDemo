@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="http://139.159.253.241:3000/stylesheets/github.css">
+    <title>Document</title>
+</head>
+<body>
+    <p><img src="typora-user-images.assets/image-20230329223420480.png" alt="image-20230329223420480"></p>
+<p>wandb key:cfcfa5de0ed1b60af0f227e470c944318924a6ea</p>
+<h4>CUDA，cuDNN，torch版本是否对应？</h4>
+<p>首先判断自己是否适合使用GPU版本的torch，打开自己的cmd输入</p>
+<p>NVIDIA-smi</p>
+<p>查看自己的Driver Version ，CUDA Version</p>
+<p>根据下图判断自己的CUDA版本是否符合要求（装的CUDA和cuDNN保持一致，版本号可以比10.2低）
+如果忘记自己的CUDA、cuDNN版本号，按这个博主的办法
+进入官网<a href="https://developer.nvidia.com/rdp/cudnn-download">https://developer.nvidia.com/rdp/cudnn-download</a> ，先注册登录，查看自己的CUDA版本号对应自己的cuDNN，如下：我的是CUDA10.1，所以对应cuDNN8.0.5
+如果有对应不上的一个，先进行卸载，再安装新的。不着急的看B站视频从头安装</p>
+<p>python
+import torch
+print(torch.<strong>version</strong>)</p>
+<p><img src="typora-user-images.assets/image-20230330192605383.png" alt="image-20230330192605383"></p>
+<p><img src="typora-user-images.assets/image-20230330192642667.png" alt="image-20230330192642667"></p>
+<p><img src="typora-user-images.assets/image-20230330192710009.png" alt="image-20230330192710009"></p>
+<p>链接：<a href="https://blog.csdn.net/USTC_SC/article/details/108391472">https://blog.csdn.net/USTC_SC/article/details/108391472</a></p>
+<h2>nvidia -smi</h2>
+<h3>基本信息</h3>
+<p><img src="typora-user-images.assets/image-20230330192833922.png" alt="image-20230330192833922"></p>
+<p><img src="typora-user-images.assets/image-20230331160514409.png" alt="image-20230331160514409"></p>
+<p><img src="typora-user-images.assets/image-20230331160602354.png" alt="image-20230331160602354"></p>
+<h3>定时刷新状态</h3>
+<p><img src="typora-user-images.assets/image-20230331160631479.png" alt="image-20230331160631479"></p>
+<h3>topo</h3>
+<h4><code>topo</code> 展示多GPU系统的<a href="https://so.csdn.net/so/search?q=%E6%8B%93%E6%89%91&spm=1001.2101.3001.7020">拓扑</a>连接信息，通常配合 <code>-m</code> 参数即 <code>nvidia-smi topo -m</code>，其他参数可自行查阅。</h4>
+<h1><strong>3 简易测试脚本</strong></h1>
+<p>nvidia-smi命令会实时记录gpu的情况，如果想让命令停止下来，需要手动执行ctrl-c，或者kill掉进程，为了便于使用，这里编写了一个shell脚本，输入：记录文件名、执行时间，执行命令即可</p>
+<p><strong>将下面的脚本复制到文本，然后保存，chmod 755 XXX.sh  修改脚本执行权限，执行即可</strong></p>
+<pre><code class="language-shell">#!/bin/bash** 
+
+# nvidia-smi执行时间函数
+function  timeout
+
+{
+
+    timeStart=`date +%s`
+
+    timeEnd=`date +%s`
+
+#echo &quot;starttime is  $timeStart&quot;
+
+#echo &quot;endtiem is $timeEnd&quot;
+
+   i=$(($timeEnd - $timeStart))
+
+  timeout=$1
+
+  echo &quot;timeout is :$timeout&quot;
+
+while ([ $i -ne $timeout ])
+
+    do
+
+       timeEnd=`date +%s`
+
+       i=$(($timeEnd - $timeStart))
+
+  done
+
+}
+
+nvidia-smi -l 1 --format=csv --filename=$1 --query-gpu=timestamp,name,index,utilization.gpu,memory.total,memory.used,power.draw &amp;
+
+echo &quot;shell  PID: $$&quot;
+
+echo &quot;nvidia-smi  PID: $!&quot;
+
+id=$!
+
+echo $id
+
+timeout $2
+
+echo $id
+
+kill -9 &quot;$id&quot;
+</code></pre>
+<h1>PyCharm部署项目到服务器 取消自动同步</h1>
+<p><img src="%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%BF%9E%E6%8E%A5%E5%B8%AE%E5%8A%A9%E6%96%87%E6%A1%A3.assets/image-20230424094137554.png" alt="image-20230424094137554"></p>
+
+</body>
+</html>

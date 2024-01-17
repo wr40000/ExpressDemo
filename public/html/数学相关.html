@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="http://139.159.253.241:3000/stylesheets/github.css">
+    <title>Document</title>
+</head>
+<body>
+    <h2>SVD</h2>
+<p><img src="typora-user-images.assets/image-20230410195449188.png" alt="image-20230410195449188"></p>
+<p><img src="typora-user-images.assets/image-20230410195512614.png" alt="image-20230410195512614"></p>
+<p><img src="typora-user-images.assets/image-20230410195635962.png" alt="image-20230410195635962"></p>
+<p><img src="typora-user-images.assets/image-20230410195722882.png" alt="image-20230410195722882"></p>
+<p><img src="typora-user-images.assets/image-20230410195753151.png" alt="image-20230410195753151"></p>
+<p><img src="typora-user-images.assets/image-20230410195816917.png" alt="image-20230410195816917"></p>
+<p><img src="typora-user-images.assets/image-20230410195900930.png" alt="image-20230410195900930"></p>
+<p><img src="typora-user-images.assets/image-20230410195924468.png" alt="image-20230410195924468"></p>
+<p><img src="typora-user-images.assets/image-20230410195947232.png" alt="image-20230410195947232"></p>
+<p><img src="typora-user-images.assets/image-20230410195956972.png" alt="image-20230410195956972"></p>
+<p><img src="typora-user-images.assets/image-20230410200041461.png" alt="image-20230410200041461"></p>
+<p><img src="typora-user-images.assets/image-20230410200050614.png" alt="image-20230410200050614"></p>
+<p><img src="typora-user-images.assets/image-20230410200142089.png" alt="image-20230410200142089"></p>
+<p><img src="typora-user-images.assets/image-20230410200239774.png" alt="image-20230410200239774"></p>
+<p><img src="typora-user-images.assets/image-20230410200411286.png" alt="image-20230410200411286"></p>
+<p><img src="typora-user-images.assets/image-20230410200420887.png" alt="image-20230410200420887"></p>
+<p><img src="typora-user-images.assets/image-20230410200455275.png" alt="image-20230410200455275"></p>
+<p><img src="typora-user-images.assets/image-20230410200557599.png" alt="image-20230410200557599"></p>
+<p><img src="typora-user-images.assets/image-20230410200707138.png" alt="image-20230410200707138"></p>
+<h2>向量与矩阵的范数</h2>
+<p>（比较1-范数、2-范数、无穷范数、p-范数、L0范数 和 L1范数等）</p>
+<p><strong>Matlab****代码</strong></p>
+<pre><code>clear all;clc;
+ 
+%% 求向量的范数
+X=[2, 3, -5, -7];   %初始化向量X
+XLfs1=norm(X,1);    %向量的1-范数
+XLfs2=norm(X,2);    %向量的2-范数
+XLfsz=norm(X,inf);  %向量的正无穷范数
+XLfsf=norm(X,-inf); %向量的负无穷范数
+ 
+%% 求矩阵的范数
+A=[2, 3, -5, -7;
+   4, 6,  8, -4;
+   6, -11, -3, 16];     %初始化矩阵A
+ 
+JZfs1=norm(A,1);        %矩阵的1-范数
+JZfs2=norm(A,2);        %矩阵的2-范数
+JZfswq=norm(A,inf);     %矩阵的无穷范数
+JZhfs=sum(svd(A));      %矩阵的核范数
+JZL1fs=sum(sum(abs(A)));% 矩阵的L1范数
+JZFfs=norm(A,&#39;fro&#39;);    %矩阵的F范数
+JZL21fs=norm(A(:,1),2) + norm(A(:,2),2) + norm(A(:,3),2)++ norm(A(:,4),2);% 矩阵的L21范数
+</code></pre>
+<p><img src="typora-user-images.assets/image-20230410204930308.png" alt="image-20230410204930308"></p>
+<pre><code>版权声明：本文为CSDN博主「TechArtisan6」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/zaishuiyifangxym/article/details/81673491
+</code></pre>
+<h2>协方差的意义</h2>
+<pre><code>http://bbs.mathchina.com/cgi-bin/topic.cgi?forum=5&amp;topic=14444
+</code></pre>
+<p><img src="typora-user-images.assets/image-20230411150534934.png" alt="image-20230411150534934"></p>
+<h2>PCA</h2>
+<p><img src="https://img-blog.csdnimg.cn/img_convert/0b15e9f94bbe048ba1bdc0609d4bc86d.png" alt="img"></p>
+<p><img src="typora-user-images.assets/image-20230411143758881.png" alt="image-20230411143758881"></p>
+<p><img src="typora-user-images.assets/image-20230411143847009.png" alt="image-20230411143847009"></p>
+<p><img src="typora-user-images.assets/image-20230411143917224.png" alt="image-20230411143917224"></p>
+<p><img src="typora-user-images.assets/image-20230411144003337.png" alt="image-20230411144003337"></p>
+<p><img src="typora-user-images.assets/image-20230411144048752.png" alt="image-20230411144048752"></p>
+<p><img src="typora-user-images.assets/image-20230411144142207.png" alt="image-20230411144142207"></p>
+<p><img src="typora-user-images.assets/image-20230411144202486.png" alt="image-20230411144202486"></p>
+<p><img src="typora-user-images.assets/image-20230411144233780.png" alt="image-20230411144233780"></p>
+<p><img src="typora-user-images.assets/image-20230411144459026.png" alt="image-20230411144459026"></p>
+<p><img src="typora-user-images.assets/image-20230411144608560.png" alt="image-20230411144608560"></p>
+<p><img src="typora-user-images.assets/image-20230411144642565.png" alt="image-20230411144642565"></p>
+<p><img src="typora-user-images.assets/image-20230411144654729.png" alt="image-20230411144654729"></p>
+<p><img src="typora-user-images.assets/image-20230411144728015.png" alt="image-20230411144728015"></p>
+<p><img src="typora-user-images.assets/image-20230411144827205.png" alt="image-20230411144827205"></p>
+<p><img src="typora-user-images.assets/image-20230411145036336.png" alt="image-20230411145036336"></p>
+<p><img src="typora-user-images.assets/image-20230411145049688.png" alt="image-20230411145049688"></p>
+<p><img src="typora-user-images.assets/image-20230411145128488.png" alt="image-20230411145128488"></p>
+<p><img src="typora-user-images.assets/image-20230411145250513.png" alt="image-20230411145250513"></p>
+<h2>t-SNE</h2>
+<h2>四元数</h2>
+<p><code>θ = atan2(b, a)</code> 是一个数学表达式，它表示计算向量 <code>(a, b)</code> 与正 x 轴之间的夹角。</p>
+<p><code>atan2()</code> 是反正切函数的一种形式，它接受两个参数 <code>b</code> 和 <code>a</code>，返回的结果是一个以弧度为单位的角度值，范围在 <code>-π</code> 到 <code>π</code> 之间。</p>
+<p>在数学中，常常使用 <code>(a, b)</code> 表示一个二维向量，其中 <code>a</code> 和 <code>b</code> 分别代表向量在 x 和 y 方向上的分量。通过计算 <code>θ = atan2(b, a)</code>，可以求得向量 <code>(a, b)</code> 与正 x 轴之间的夹角。</p>
+<p><img src="%E6%95%B0%E5%AD%A6%E7%9B%B8%E5%85%B3.assets/image-20230707152343114.png" alt="image-20230707152343114"></p>
+<p><img src="%E6%95%B0%E5%AD%A6%E7%9B%B8%E5%85%B3.assets/image-20230707151226339.png" alt="image-20230707151226339"></p>
+
+</body>
+</html>

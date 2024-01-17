@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="http://139.159.253.241:3000/stylesheets/github.css">
+    <title>Document</title>
+</head>
+<body>
+    <p><img src="Distilling%20Knowledge.assets/image-20240112113652794.png" alt="image-20240112113652794"></p>
+<pre><code class="language-sh">#!/bin/bash
+
+# 循环执行 24 次，每次都等待上一个命令结束后再执行下一个
+for count in {1..24}; do
+    python3 train.py --cfg configs/cifar100/dkd/res32x4_res8x4.yaml --count $count &amp;&amp; 
+done
+</code></pre>
+<pre><code class="language-python">        min_t = 2.0 
+        max_t = 5.0
+        min_entropy = 0
+        max_entropy = 0.8
+        entropy_period = 100  # 调整温度的周期
+        for step, teacher_entropy in enumerate(y_t):
+            # 使用余弦策略动态调整 t
+
+            temp = min(max_t, max(min_t, temp + 0.5 * (max_t - min_t) * (1 + np.cos(step / entropy_period * np.pi))))
+
+        T = temp
+
+        KD_loss = 0
+        KD_loss += nn.KLDivLoss(reduction=&#39;batchmean&#39;)(F.log_softmax(y_s / T, dim=1),
+                                                       F.softmax(y_t / T, dim=1)) * T * T
+</code></pre>
+<pre><code>--path-t ./save/models/resnet56_vanilla/ckpt_epoch_240.pth \
+        --distill dkd \
+        --model_s resnet20 -r 1 -a 0 -b 1 \
+        --dkd_alpha 1 \
+        --dkd_beta 2 \
+        --batch_size 128 --learning_rate 0.05 \
+        --have_mlp 0 --mlp_name &#39;global&#39; \
+        --save_model \
+        --experiments_dir &#39;tea-res56-stu-res20/kd/global_T/your_experiment_name&#39; \
+        --experiments_name &#39;DKD-1&#39;
+
+
+
+--path-t
+./save/models/resnet56_vanilla/ckpt_epoch_240.pth
+--distill
+kd
+--model_s
+resnet20
+--num_workers
+0
+-r
+0.1
+-a
+0.9
+-b
+0
+--kd_T
+4
+--batch_size
+128
+--learning_rate
+0.05
+--have_mlp
+0
+--mlp_name
+global
+--cosine_decay
+1
+--is_ctk
+0
+--decay_max
+0
+--decay_min
+-1
+--decay_loops
+10
+
+测试集数据获取
+--path-t
+./save/models/resnet56_vanilla/ckpt_epoch_240.pth
+--distill
+kd
+--epochs
+1
+--model_s
+resnet20
+--num_workers
+0
+-r
+0.1
+-a
+0.9
+-b
+0
+--kd_T
+4
+--batch_size
+128
+--learning_rate
+0.05
+--have_mlp
+0
+--mlp_name
+global
+--gettestdata
+1
+--cosine_decay
+1
+--decay_max
+0
+--decay_min
+-1
+--decay_loops
+10
+--save_model
+--experiments_dir
+tea-res56-stu-res20/kd/global_T/your_experiment_name
+--experiments_name
+testdata
+</code></pre>
+<p><img src="Distilling%20Knowledge.assets/image-20240106194730384.png" alt="image-20240106194730384"></p>
+<pre><code>现在在使用进行知识蒸馏，用教师网路resnet56训练学生网络resnet20，对于一般的基线训练，将温度设置到4，迭代240个epoch后可以在cifar100测试集上取得大概70.66的top1正确率，我使用我自己的算法迭代240个epoch后可以取到测试集71.48的正确率，但是训练集只有83的top1正确率这是一个比较低的数值，一般来说，不附加任何蒸馏，只是使用resnet20在cifar100上训练，训练集可以达到90以上的正确率，而我只有83左右，但是测试机的数据还不错
+</code></pre>
+<p><img src="Distilling%20Knowledge.assets/Snipaste_2023-10-25_20-19-11.png" alt="Snipaste_2023-10-25_20-19-11"></p>
+<pre><code>1.信息量丰富或者小的样本可能不一定适合学生网络
+2.温度范围
+3.温度的过渡策略                                                   --随着信息熵，训练过程中学生网络能力逐渐升高
+4.同信息熵下，分类错误样本和分类正确样本混合在一起
+5.信息熵过大，分类基本错误，此时的温度是否考虑特殊处理                    --固定为一个合理的值
+6.温度的影响因素是否考虑学生网络的信息熵，或其他因素                      --主要：学生和教师网络在同区间信息熵的正确样本比例
+7.学生网络在训练到一定阶段，是否可以考虑收束温度范围，调整温度过渡策略       --学生网络后期拟合的较好后，大部分样本温度基本趋近于4
+8.对于学生网络不擅长的类别或样本，是否考虑剔除                          --待验证
+9.对于分类正确的样本，信息熵越小温度是否应该越大，接近0时为4，信息熵在0到2.5这个区间内，温度T缓慢下降至1，其他的样本的温度T保持 1 不变,核心是使绝大多数样本信息熵稳定在一个数值附近，对于分类错误的样本是否采取相同或者额外措施                                             --最低温度最好不要太低，目前3.5
+10.信息熵小而且判断错误的样本可能需要更多地关注，虽然对目标类别判断错误，但是对非目标类的否定可能是正确的
+11.信息熵可以一定程度代表暗知识的丰富程度，同时考虑暗知识的丰富程度和学生网络吸收暗知识的阶段
+12.效仿DKD，将教师 网络的xxs分解，分为两部分 --目标类信息熵 非目标类信息熵  
+13.师生网络每个类别分类错误的样本数比例，加入拟合函数                         --效果不明显
+14.交互可视化 可视化在在一定范围的信息熵下的分类正确的样本数
+
+1.兴趣转移
+2.聚类效果
+3.cam
+4.师生网络训练过程loss，testAcc波动, --稳定性
+5.师生网络信息熵，正确错误类别，温度
+6.模型知识容量变化，或者是异构蒸馏或多级蒸馏里面感兴趣区域的转移方式
+</code></pre>
+<p><img src="Distilling%20Knowledge.assets/image-20231109153953238.png" alt="image-20231109153953238"></p>
+<p><img src="Distilling%20Knowledge.assets/image-20231114201956850.png" alt="image-20231114201956850"></p>
+<p>调用命令：</p>
+<pre><code>-m resnet8x4 -c ../output/cifar100_baselines/dkd,res32x4,res8x4/student_best_4
+</code></pre>
+<pre><code>screen -dmS Ter bash -c &quot;sh scripts/dkd+fitFn_res32x4_res8x4.sh&quot;
+</code></pre>
+<pre><code>json命名规范：
+1蒸馏方法_2教师网络[acc]_3学生网络[acc]_4温度_5拟合函数_6数据集.json
+</code></pre>
+<pre><code>ckpt = {str}&#39;../output/cifar100_baselines/dkd,res32x4,res8x4/student_best_4&#39;
+
+现在有tea = &#39;res32x4&#39;,希望teaAcc可以根据tea取不同的值，具体规则如下:
+&#39;resnet56&#39;  取 72.34  下面的使用--简写
+&#39;resnet110&#39; -- 74.31
+&#39;resnet32x4&#39; -- 79.42
+&#39;wrn_40_2&#39; -- 75.61
+&#39;vgg13&#39; -- 74.64
+&#39;ResNet50&#39; -- 79.34
+</code></pre>
+<pre><code>resnet56
+resnet110
+resnet32x4
+ResNet50
+wrn_40_2
+vgg13
+
+&quot;resnet8&quot;: (resnet8, None),
+&quot;resnet14&quot;: (resnet14, None),
+&quot;resnet20&quot;: (resnet20, None),
+&quot;resnet32&quot;: (resnet32, None),
+&quot;resnet44&quot;: (resnet44, None),
+&quot;resnet8x4&quot;: (resnet8x4, None),
+&quot;ResNet18&quot;: (ResNet18, None),
+&quot;wrn_16_1&quot;: (wrn_16_1, None),
+&quot;wrn_16_2&quot;: (wrn_16_2, None),
+&quot;wrn_40_1&quot;: (wrn_40_1, None),
+&quot;vgg8&quot;: (vgg8_bn, None),
+&quot;vgg11&quot;: (vgg11_bn, None),
+&quot;vgg16&quot;: (vgg16_bn, None),
+&quot;vgg19&quot;: (vgg19_bn, None),
+&quot;MobileNetV2&quot;: (mobile_half, None),
+&quot;ShuffleV1&quot;: (ShuffleV1, None),
+&quot;ShuffleV2&quot;: (ShuffleV2, None),
+
+
+2e254c9f
+8bc905f2
+
+train student net
+res32x4,res8x4
+-m resnet8x4 -c ../output/cifar100_baselines/dkd,res32x4,res8x4/student_best_4
+res32x4,ShuffleV1
+-m ShuffleV1 -c ../output/cifar100_baselines/dkd,res32x4,shuv1/student_best_2
+</code></pre>
+<pre><code class="language-py">def validate_AndForTestData(val_loader, distiller, entropies):
+    batch_time, losses, top1, top5 = [AverageMeter() for _ in range(4)]
+    criterion = nn.CrossEntropyLoss()
+    num_iter = len(val_loader)
+    pbar = tqdm(range(num_iter))
+    class_stats = {}
+
+    distiller.eval()
+    with torch.no_grad():
+        start_time = time.time()
+        for idx, (image, target) in enumerate(val_loader):
+            image = image.float()
+            image = image.cuda(non_blocking=True)
+            target = target.cuda(non_blocking=True)
+            output = distiller(image=image)
+            loss = criterion(output, target)
+            acc1, acc5 = accuracy(output, target, topk=(1, 5))
+            batch_size = image.size(0)
+            losses.update(loss.cpu().detach().numpy().mean(), batch_size)
+            top1.update(acc1[0], batch_size)
+            top5.update(acc5[0], batch_size)
+
+            # Calculate entropy for each sample in the batch
+            for i in range(output.size(0)):
+                logits = output[i]  # Get the output for the i-th sample
+                probs = F.softmax(logits, dim=0)  # Compute the probability distribution
+                entropy = -torch.sum(probs * torch.log2(probs + 1e-12))  # Compute entropy
+
+                # Get the true label index
+                true_label_index = target[i].item()
+
+                # Get the model&#39;s prediction
+                model_prediction = torch.argmax(logits).item()
+
+                # Check if the prediction is correct
+                is_model_correct = 1 if model_prediction == true_label_index else 0
+
+                # Create a tuple with entropy, true label, and whether the prediction is correct
+                data_point = [entropy.item(), true_label_index, is_model_correct]
+                entropies.append(data_point)
+
+            # 检查错误分类的样本
+            for i in range(output.size(0)):
+                logits = output[i]
+                model_prediction = torch.argmax(logits).item()
+                true_label_index = target[i].item()
+
+                if model_prediction != true_label_index:
+                    # 初始化缺失的类别
+                    if true_label_index not in class_stats:
+                        class_stats[true_label_index] = {&quot;errDataCount&quot;: 0, &quot;errDataIndex&quot;: []}
+
+                    # 获取真实标签的名称
+                    true_label_name = class_names[true_label_index]
+                    class_stats[true_label_index][&quot;errDataClass&quot;] = true_label_name
+
+
+                    # 增加错误分类计数
+                    class_stats[true_label_index][&quot;errDataCount&quot;] += 1
+
+                    # 获取信息熵
+                    probs = F.softmax(logits, dim=0)
+                    entropy = -torch.sum(probs * torch.log2(probs + 1e-12))
+
+                    # 记录错误分类样本的索引和信息熵
+                    predictione_label_name = class_names[model_prediction]  # 样本被错误分类到的类别
+                    err_data_info = {&quot;index&quot;: idx * val_loader.batch_size + i, &quot;entropy&quot;: entropy.item(),
+                                     &quot;predictionClass&quot;: predictione_label_name, &quot;predictionIndex&quot;: model_prediction}
+                    class_stats[true_label_index][&quot;errDataIndex&quot;].append(err_data_info)
+
+            # measure elapsed time
+            batch_time.update(time.time() - start_time)
+            start_time = time.time()
+            msg = &quot;Top-1:{top1.avg:.3f}| Top-5:{top5.avg:.3f}&quot;.format(
+                top1=top1, top5=top5
+            )
+            pbar.set_description(log_msg(msg, &quot;EVAL&quot;))
+            pbar.update()
+    pbar.close()
+    return top1.avg, top5.avg, losses.avg, entropies, class_stats
+</code></pre>
+<h1>实验数据</h1>
+<p><img src="Distilling%20Knowledge.assets/image-20231102104456655.png" alt="image-20231102104456655"><img src="Distilling%20Knowledge.assets/image-20231102151243768.png" alt="image-20231102151243768"  /></p>
+<p><code>entropy_001_test_acc_71.38_T_1_Tboeder_0.6</code>	：信息熵0到06温度4_信息熵06到25温度4信息熵大于25温度恒为1</p>
+<pre><code>72.14
+74.16
+76.40
+76.92
+70.79
+77.39
+</code></pre>
+<p><img src="Distilling%20Knowledge.assets/image-20231027141344668.png" alt="image-20231027141344668"></p>
+<p><img src="Distilling%20Knowledge.assets/image-20231027141415782.png" alt="image-20231027141415782"></p>
+<p><a href="https://qianqianquege.com/math/">拟合曲线,拟合函数,拟合度,数据拟合 (qianqianquege.com)</a></p>
+<pre><code class="language-js">//拟合数据： y = -0.44x^2 + -0.15x + 4.06
+[[2.5,1],[0.000001,4],[0.8,3.8],[1.9,2]]
+</code></pre>
+<h1>MATLAB拟合函数</h1>
+<h2>fit_function--1</h2>
+<pre><code class="language-py">def poly8_fit_function(x, p1, p2, p3, p4, p5, p6, p7, p8, p9):
+    return p1 * x**8 + p2 * x**7 + p3 * x**6 + p4 * x**5 + p5 * x**4 + p6 * x**3 + p7 * x**2 + p8 * x + p9
+
+# 提供拟合参数（这些值需要根据你的 MATLAB 拟合结果进行替换）
+p1 = 0.0004
+p2 = -0.0094
+p3 = 0.0883
+p4 = -0.4257
+p5 = 1.0938
+p6 = -1.3502
+p7 = 0.5047
+p8 = -0.0551
+p9 = 3.9990
+# 定义拟合函数
+def fit_function(x):
+    return poly8_fit_function(x, p1, p2, p3, p4, p5, p6, p7, p8, p9)
+</code></pre>
+<h2>fit_function--2</h2>
+<pre><code class="language-py">def fourier_fit(x, a0, a1, b1, a2, b2, a3, b3, a4, b4, a5, b5, w):
+    return a0 + a1 * np.cos(x * w) + b1 * np.sin(x * w) + \
+           a2 * np.cos(2 * x * w) + b2 * np.sin(2 * x * w) + \
+           a3 * np.cos(3 * x * w) + b3 * np.sin(3 * x * w) + \
+           a4 * np.cos(4 * x * w) + b4 * np.sin(4 * x * w) + \
+           a5 * np.cos(5 * x * w) + b5 * np.sin(5 * x * w)
+
+# 使用你提供的系数和 w 值
+a0 = 2.1756e+03
+a1 = -2.5855e+03
+b1 = -2.5721e+03
+a2 = 29.6729
+b2 = 2.1150e+03
+a3 = 541.4713
+b3 = -581.3553
+a4 = -167.8765
+b4 = 9.8774
+a5 = 10.6306
+b5 = 9.2811
+w = 0.2565
+
+# 示例调用
+x_values = np.array([1, 2, 3, 4, 5])  # 替换为你的实际 x 值
+result = fourier_fit(x_values, a0, a1, b1, a2, b2, a3, b3, a4, b4, a5, b5, w)
+print(result)
+</code></pre>
+<pre><code>mdistiller文件夹位于/mdistiller-master/mdistiller,
+dkd+fitFn.py位于/mdistiller-master/scripts/dkd+fitFn.py,
+train.py位于/mdistiller-master/tools/train.py
+</code></pre>
+<h1>DKD</h1>
+<pre><code class="language-py">from __future__ import print_function
+
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import numpy as np
+from scipy.optimize import curve_fit
+import torch
+
+# DKD所需函数
+def _get_gt_mask(logits, target):
+    target = target.reshape(-1)
+    mask = torch.zeros_like(logits).scatter_(1, target.unsqueeze(1), 1).bool()
+    return mask
+def _get_other_mask(logits, target):
+    target = target.reshape(-1)
+    mask = torch.ones_like(logits).scatter_(1, target.unsqueeze(1), 0).bool()
+    return mask
+def cat_mask(t, mask1, mask2):
+    t1 = (t * mask1).sum(dim=1, keepdims=True)
+    t2 = (t * mask2).sum(1, keepdims=True)
+    rt = torch.cat([t1, t2], dim=1)
+    return rt
+
+def poly9_fit(x, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10):
+    return p1 * x**9 + p2 * x**8 + p3 * x**7 + p4 * x**6 + p5 * x**5 + p6 * x**4 + p7 * x**3 + p8 * x**2 + p9 * x + p10
+
+# 使用你提供的系数
+p1 = 0.0000
+p2 = -0.0005
+p3 = -0.0003
+p4 = 0.0387
+p5 = -0.2638
+p6 = 0.7730
+p7 = -0.9770
+p8 = 0.2737
+p9 = 0.0032
+p10 = 3.9982
+
+
+# 输入的信息熵在0到0.7之间，温度将保持为4；如果信息熵在0.7到2.5之间，温度将从4线性下降到1；如果信息熵大于2.5，温度将保持为1。
+# parser.add_argument(&#39;--entropy_t_first&#39;, type=float, default=4.0)
+# parser.add_argument(&#39;--entropy_t_second&#39;, type=float, default=3.5)
+# parser.add_argument(&#39;--entropy_t_first_end&#39;, type=float, default=0.1)
+# parser.add_argument(&#39;--entropy_of_t_second_end&#39;, type=float, default=2.5)
+# def calculate_temperature_3(entropy, opt):
+#     # 计算温度范围
+#     min_entropy = 0.0
+#     max_entropy = 2.5
+#
+#     # 对信息熵进行范围限制
+#     entropy = torch.clamp(entropy, min_entropy, max_entropy)
+#
+#     device = entropy.device  # 获取entropy所在的设备
+#
+#     # 计算温度
+#     min_temp = torch.tensor(4.0, device=device, dtype=torch.float32)
+#     max_temp = torch.tensor(1.0, device=device, dtype=torch.float32)
+#
+#     temperature = torch.where(entropy &lt;= 0.4, min_temp, 4.0 - 3.0 * (entropy - 0.4) / (max_entropy - 0.4))
+#     temperature = torch.where(entropy &gt; max_entropy, max_temp, temperature)
+#
+#     return temperature
+
+def calculate_temperature_3(entropy, opt):
+    #交叉熵
+    entropy1 = opt.entropy_t_first_end  #第一段结束交叉熵的值 0.8
+    entropy2 = opt.entropy_of_t_second_end  #第二段结束交叉熵的值 2.5
+    min_entropy = 0.0   #最小交叉熵的值
+    # 温度
+    t1 = opt.entropy_t_first #第一段结束温度的值 4.0
+    t2 = opt.entropy_t_second   #第二段结束温度的值 1.0
+    # 对信息熵进行范围限制
+    entropy = torch.clamp(entropy, min_entropy, entropy2)
+    device = entropy.device  # 获取entropy所在的设备
+    # 计算温度
+    min_temp = torch.tensor(t1, device=device, dtype=torch.float32)
+    max_temp = torch.tensor(t2, device=device, dtype=torch.float32)
+    # FitFunc--1
+    # temperature = fit_function(entropy)
+    # FitFunc--2
+    temperature = poly9_fit(entropy, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10)
+    # print(temperature)
+    temperature = torch.where(entropy &gt; entropy1, -1.7647 * entropy + 5.41176, temperature)
+    temperature = torch.where(entropy &gt; entropy2, max_temp, temperature)
+    return temperature
+
+
+
+
+
+class DistillKL(nn.Module):
+    &quot;&quot;&quot;Distilling the Knowledge in a Neural Network&quot;&quot;&quot;
+    def __init__(self):
+        super(DistillKL, self).__init__()
+
+    def forward(self, logits_student, logits_teacher, temp, opt, target):
+        if opt.is_ctk:
+            # 原始版本
+            T = temp.cuda()
+            KD_loss = 0
+            KD_loss += nn.KLDivLoss(reduction=&#39;batchmean&#39;)(F.log_softmax(logits_student / T, dim=1),
+                                                           F.softmax(logits_teacher / T, dim=1)) * T * T
+            # 基线KD
+            return KD_loss
+        else:
+            if opt.use_dkd:
+                props = F.softmax(logits_teacher, dim=1)
+                entropy = -torch.sum(props * torch.log(props + 1e-10), dim=1)
+                temperature = calculate_temperature_3(entropy, opt)
+                gt_mask = _get_gt_mask(logits_student, target)
+                other_mask = _get_other_mask(logits_student, target)
+
+                # pred_student = F.softmax(logits_student / temperature, dim=1)
+                pred_student = F.softmax(torch.div(logits_student, temperature.view(-1, 1)), dim=1)# 修改后
+                # pred_teacher = F.softmax(logits_teacher / temperature, dim=1)
+                pred_teacher = F.softmax(torch.div(logits_teacher, temperature.view(-1, 1)), dim=1)  # 修改后
+
+                pred_student = cat_mask(pred_student, gt_mask, other_mask)
+                pred_teacher = cat_mask(pred_teacher, gt_mask, other_mask)
+                log_pred_student = torch.log(pred_student)
+                tckd_loss = (
+                        F.kl_div(log_pred_student, pred_teacher, reduction=&#39;sum&#39;)
+                        * (temperature ** 2) / target.shape[0]
+                )
+
+                tckd_loss = torch.mean(tckd_loss)   # 取平均 修改
+
+                # pred_teacher_part2 = F.softmax(
+                #     logits_teacher / temperature - 1000.0 * gt_mask, dim=1
+                # )
+                # log_pred_student_part2 = F.log_softmax(
+                #     logits_student / temperature - 1000.0 * gt_mask, dim=1
+                # )
+                pred_teacher_part2 = F.softmax(torch.div(logits_teacher, temperature.view(-1, 1)) - 1000.0 * gt_mask,
+                                               dim=1)# 修改后
+                log_pred_student_part2 = F.log_softmax(
+                    torch.div(logits_student, temperature.view(-1, 1)) - 1000.0 * gt_mask, dim=1)# 修改后
+
+                nckd_loss = (
+                        F.kl_div(log_pred_student_part2, pred_teacher_part2, reduction=&#39;sum&#39;)
+                        * (temperature ** 2) / target.shape[0]
+                )
+                nckd_loss = torch.mean(nckd_loss)   # 取平均 修改
+
+                # opt.dkd_alpha, opt.dkd_beta,
+                KD_loss = opt.dkd_alpha * tckd_loss + opt.dkd_beta * nckd_loss
+
+                # KD_loss = 0
+                # for i in range(loss.shape[0]):
+                #     KD_loss = KD_loss + loss[i]
+                # KD_loss = KD_loss / loss.shape[0]
+                return KD_loss
+            else:
+                # entropy = -np.sum(logits_teacher * np.log(logits_teacher), axis=1) # 计算每个样本的信息熵
+                props = F.softmax(logits_teacher, dim=1)
+                entropy = -torch.sum(props * torch.log(props + 1e-10), dim=1)
+                temperatures = calculate_temperature_3(entropy, opt)
+                # 将每个样本的输出除以对应的温度
+                logits_teacher_normalized = logits_teacher / temperatures[:, np.newaxis]
+                logits_student_normalized = logits_student / temperatures[:, np.newaxis]
+                # logits_teacher_normalized 现在包含了每个样本的输出，根据对应温度进行了归一化
+                KD_loss = 0
+                for i in range(logits_student.shape[0]):
+                    T_i = temperatures[i]  # 获取第i个样本的温度
+                    # print(T_i)
+                    # 对第i个样本计算KL散度损失
+                    kd_loss_i = F.kl_div(F.log_softmax(logits_student[i] / T_i, dim=0), F.softmax(logits_teacher[i] / T_i, dim=0),
+                                         reduction=&#39;batchmean&#39;)
+                    # 乘以温度的平方
+                    kd_loss_i *= T_i * T_i
+                    # 累加到总损失
+                    KD_loss += kd_loss_i
+
+            return KD_loss
+</code></pre>
+<p>Distilling the Knowledge in a Neural Network</p>
+<p><img src="Distilling%20Knowledge.assets/image-20230422152955392.png" alt="image-20230422152955392"></p>
+<p><img src="Distilling%20Knowledge.assets/image-20230422162239549.png" alt="image-20230422162239549"></p>
+<p><img src="Distilling%20Knowledge.assets/image-20230422153207950.png" alt="image-20230422153207950"></p>
+<h1>GPT</h1>
+<h2>知识蒸馏中的温度T,以及为什么在损失函数中，分母都通常乘以T^2</h2>
+<p>在知识蒸馏（Knowledge Distillation）中，温度 T 是一个超参数，用于控制模型预测的软化程度。通过引入温度参数，可以使模型的预测变得更平滑，并增加不同类别之间的相对差异。</p>
+<p>在知识蒸馏中，通常使用 softmax 函数对模型的预测进行归一化，使其表示为概率分布。softmax 函数将原始预测值转换为介于 0 到 1 之间的概率值，且概率总和为 1。softmax 函数的计算公式如下：</p>
+<p>softmax(x_i) = exp(x_i / T) / sum(exp(x_j / T))</p>
+<p>其中，x_i 是原始预测值，T 是温度参数。</p>
+<p>温度参数 T 控制了 softmax 函数中指数运算的敏感程度。较大的温度值会使指数函数的结果更加平滑，减小了概率之间的差异。较小的温度值会使指数函数的结果更加尖锐，增大了概率之间的差异。因此，通过调整温度参数 T，可以控制模型预测的平滑程度。</p>
+<p>在损失函数中，分母乘以 T^2 的作用是对损失值进行缩放。这是因为 softmax 函数中的指数运算中包含了 T 的乘法，为了保持损失值的量级一致，需要将损失值缩放回原始的量级。乘以 T^2 的目的是为了提高温度参数对损失值的敏感度，使其对损失值的影响更加明显。</p>
+<p>总结起来，温度参数 T 在知识蒸馏中用于控制模型预测的平滑程度，通过调整 T 可以增加或减小类别之间的相对差异。而在损失函数中，分母乘以 T^2 是为了保持损失值的量级一致，并提高温度参数对损失值的敏感度。</p>
+<h2>损失函数的softmax</h2>
+<p>在知识蒸馏中，损失函数的softmax起着多个作用。</p>
+<p>首先，损失函数中的softmax函数可以将模型的输出转化为概率分布。通过对模型输出进行softmax操作，我们可以得到每个类别的概率值，用于表示模型对不同类别的置信度。这种概率分布的输出使得知识蒸馏可以更好地探测和利用模型的不确定性信息。</p>
+<p>其次，softmax函数能够对模型输出的概率分布进行标准化。通过将模型输出的原始分数进行指数化和归一化，softmax函数确保了所有类别的概率之和等于1。这种标准化过程有助于比较模型输出与教师模型（或其他目标模型）的分布，并加强对模型输出的训练约束。</p>
+<p>此外，使用softmax函数作为损失函数还可以提供更平滑的目标分布。通常情况下，知识蒸馏中的损失函数会使用教师模型的输出作为目标。如果直接使用教师模型的输出概率分布会导致非常尖锐的目标分布，可能会导致训练中的不稳定性问题。通过对教师模型的输出进行softmax操作，我们可以获得一个平滑的目标分布，从而稳定模型的训练过程。</p>
+<p>综上所述，损失函数中的softmax函数在知识蒸馏中的作用包括：将模型输出转化为概率分布、对模型输出进行标准化，并提供一个平滑的目标分布。这些作用都有助于优化和稳定知识蒸馏的训练过程，使得学生模</p>
+<h1>Self_KD</h1>
+<h2>(LSR)label smoothing regularization</h2>
+<p>标签平滑正则化（label smoothing regularization）旨在改善模型的泛化能力和稳定性。 在传统的分类任务中，使用独热编码来表示目标类别，即将目标类别的真实标签定义为1，其他所有类别的标签为0。这种表示方式使得模型更容易过拟合训练数据，因为它会过度自信地相信预测结果。</p>
+<p>标签平滑正则化通过对目标类别的标签进行平滑处理来缓解过拟合问题。具体而言，它将真实标签替换为一个介于0和1之间的小的非零值，同时将其他类别的标签稍微增加，从而使得模型对不同类别的预测结果更加谦逊和平衡。这样一来，模型在训练过程中不会像原始标签一样过分自信，而是更加关注分类决策边界附近的信息，提高了模型的泛化性能。</p>
+<p>通过引入标签平滑正则化，我们可以帮助模型学习更加鲁棒和通用的特征表示，从而在面对未见数据时表现更好。这种技术在深度学习中被广泛应用于图像分类、语音识别等任务中，以提升模型的性能和稳定性。</p>
+<h2>(Tf-KDself , Tf-KDreg)teacher-free knowledge distillation</h2>
+<p>teacher-free knowledge distillation (Tf-KDsel f, Tf-KDreg) , 在普通的知识蒸馏中，通常需要一个预先训练好的教师模型作为知识来源来指导学生模型的训练。然而，Tf-KDsel f和Tf-KDreg则摆脱了对教师模型的依赖。</p>
+<p>Tf-KDsel f是一种基于样本选择方法的知识蒸馏框架。它从训练数据中选择出代表性的样本，并通过自我监督机制来获取这些样本的标签信息。利用这些标签信息，学生模型可以进行有效的知识蒸馏，提高其性能。</p>
+<p>另一方面，Tf-KDreg是一种基于正则化的知识蒸馏框架。它通过对学生模型的输出与真实标签之间的差距进行正则化处理来引导模型的训练。这种方法可以降低模型过度拟合的风险，并优化学生模型的泛化能力。</p>
+<p>总的来说，Tf-KDsel f和Tf-KDreg是两种教师无关的知识蒸馏技术，它们通过选择适当的样本或应用正则化方法，来提升学生模型的性能，从而达到知识蒸馏的目的。</p>
+<h2>(CS-KD)class-wise self-knowledge distillation</h2>
+<p><strong>Class-wise Self-Knowledge Distillation (CS-KD)</strong> 旨在通过教师模型的指导，将深层次的知识转移到学生模型中。该方法着重于对不同类别之间的知识传递和相互关系进行建模。</p>
+<p>CS-KD的关键思想是，在训练过程中，教师模型将自身在特定类别上的置信度分布作为信息源，并引导学生模型去拟合这些置信度分布。通过这种方式，学生模型可以学习到教师模型对于每个类别的认知水平和特征表示。</p>
+<p>CS-KD包含两个主要的步骤。首先，教师模型被训练来预测样本的类别，并生成类别置信度分布。然后，学生模型使用这些置信度分布作为额外的辅助目标，并与原始分类目标一起进行训练。这种额外的知识传递允许学生模型更好地了解与类别相关的知识和决策边界，从而提高其性能。</p>
+<p>CS-KD框架的优点在于，它能够通过教师模型的指导，帮助学生模型更好地理解不同类别之间的差异和相似性。这种知识蒸馏方法可以提高学生模型的泛化能力，并且适用于各种分类任务和网络结构。</p>
+<p>需要注意的是，CS-KD只是众多知识蒸馏框架中的一种，每种蒸馏方法都有其独特的特点和适用场景。在选择合适的蒸馏框</p>
+<h2>(PS-KD)progressive self-knowledge distillation</h2>
+<p>渐进自我知识蒸馏（PS-KD）, 它是用于训练模型的一种技术，通过逐步增强学生模型的能力来达到知识转移的目标。</p>
+<p>在PS-KD中，教师模型和学生模型共同参与训练过程。开始时，教师模型与学生模型具有相似的初始权重。然后，通过逐步迭代的方式，学生模型从教师模型中获取知识。在每个迭代阶段，学生模型的输出被视为“软目标”，与教师模型的输出进行比较。学生模型根据这些“软目标”进行训练，并且逐渐提高自身性能。</p>
+<p>渐进自我知识蒸馏的特点是，它允许学生模型从多个阶段的教师模型中学习，逐渐增加知识的深度和复杂性。通过这种方式，学生模型可以从教师模型的丰富知识中获益，提升自身的性能和泛化能力。</p>
+<p>总而言之，渐进自我知识蒸馏（PS-KD）是一种利用教师模型逐步增强学生模型能力的知识蒸馏框架，通过多次迭代训练，逐渐提高学生模型的性能和泛化能力。</p>
+<h2>(Mr-KD)memory-replay knowledge distillation</h2>
+<p>memory-replay knowledge distillation（Mr-KD），中文翻译为&quot;记忆回放知识蒸馏&quot;。它通过模仿人脑对记忆和经验的处理方式，尝试将老师模型的重要信息存储为记忆，并在后续的训练过程中回放这些记忆来指导学生模型的训练。</p>
+<p>在Mr-KD中，首先使用一个强大且复杂的教师模型对训练数据进行预测，并将其结果保存在一个专门用于存储记忆的缓冲区中。然后，学生模型会在每次训练时从这个记忆缓冲区中随机选择一部分记忆，并将其作为额外的训练目标。这样，学生模型便可以从教师模型的经验中受益，而不仅仅是依靠标签和原始数据进行训练。</p>
+<p>通过使用记忆回放技术，Mr-KD可以提高学生模型的泛化能力和性能，并减轻过拟合问题。因为学生模型可以从教师模型的丰富知识中学习，所以它可以更好地捕捉到数据集中的细微特征和模式。</p>
+<p>总的来说，memory-replay knowledge distillation是一种利用记忆回放来指导学生模型训练的知识蒸馏方法。它可以帮助学生模型从教师模型的经验中受益，并提升模型的性能和泛化能力。</p>
+<h2>(DDGSD)data-distortion guided self-knowledge distillation</h2>
+<p><strong>Data-distortion guided self-knowledge distillation (DDGSD) 是一种基于数据扭曲的自我知识蒸馏方法。</strong></p>
+<p>在这种方法中，教师模型和学生模型使用相同的架构，并以教师模型为目标进行训练。然而，与传统的知识蒸馏不同的是，DDGSD通过对输入数据应用扭曲来增强训练过程。</p>
+<p>数据扭曲是一种改变训练样本的方式，通过引入一些变换或噪声来改变数据的属性。这种扭曲可以包括图像旋转、缩放、裁剪等操作，也可以是对图像进行添加噪声、模糊等处理。</p>
+<p>DDGSD利用这种数据扭曲的方式，生成一系列新的训练样本。这些样本与原始样本略有不同，从而使得学生模型能够更好地理解数据的多样性和不确定性。通过将教师模型的预测结果引导到这些数据扭曲后的样本上，学生模型可以更好地学习到教师模型的知识。</p>
+<p>通过应用数据扭曲，DDGSD能够为学生模型提供更多的训练信息，有效地提高了知识蒸馏的效果。这种方法可以被广泛应用于各种领域，包括计算机视觉和自然语言处理等任务中，以提高模型的性能和泛化能力。</p>
+<h2>(BYOT)be your own teacher</h2>
+<p>be your own teacher (BYOT) ，它允许模型通过自我训练来提高性能。在传统的知识蒸馏方法中，教师模型会指导学生模型进行学习，而BYOT则摒弃了这种依赖关系，使得学生模型可以自主地从自身的预测结果中学习。</p>
+<p>BYOT的基本思想是通过引入噪声或扰动来损坏输入数据，然后让学生模型尝试从这些失真的数据样本中重构原始输入。通过这种方式，学生模型不仅可以学习如何正确地分类样本，还可以学习如何适应噪声和干扰，提高其鲁棒性和泛化能力。</p>
+<p>与其他知识蒸馏方法相比，BYOT具有独特的优势。首先，它减少了对教师模型的依赖，避免了教师模型可能存在的误导或固有局限性。其次，BYOT可以帮助模型发现和纠正自身的错误，从而提升自我学习能力。此外，BYOT还可以应用于各种任务和领域，并且不需要额外的标签或人工标注数据。</p>
+<p>总之，be your own teacher (BYOT) 是一种能够通过自我训练来提高模型性能的知识蒸馏框架。它通过在输入数据中引入噪声和扰动，使学生模型能够从失真的样本中重构原始输入，从而提升鲁棒性和泛化能力，并具有减少对教师模型依赖</p>
+<pre><code class="language-python">from __future__ import print_function
+
+import os
+
+import numpy as np
+from PIL import Image
+from torch.utils.data import DataLoader
+from torchvision import datasets, transforms
+
+# 定义数据集的均值和标准差
+mean = [0.5071, 0.4867, 0.4408]  # 数据集的均值
+stdv = [0.2675, 0.2565, 0.2761]  # 数据集的标准差
+
+def get_data_folder():
+    &quot;&quot;&quot;
+    返回存储数据的路径
+    &quot;&quot;&quot;
+    data_folder = &#39;your_cifar_data_path&#39;  # 数据存储路径
+
+    if not os.path.isdir(data_folder):
+        os.makedirs(data_folder)
+
+    return data_folder
+
+# 定义一个自定义的 CIFAR100 数据集类，继承自 torchvision 的 CIFAR100 类
+class CIFAR100BackCompat(datasets.CIFAR100):
+    &quot;&quot;&quot;
+    CIFAR100Instance+Sample 数据集
+    &quot;&quot;&quot;
+
+    @property
+    def train_labels(self):
+        return self.targets
+
+    @property
+    def test_labels(self):
+        return self.targets
+
+    @property
+    def train_data(self):
+        return self.data
+
+    @property
+    def test_data(self):
+        return self.data
+
+# 定义 CIFAR100Instance 数据集类，继承自 CIFAR100BackCompat 类
+class CIFAR100Instance(CIFAR100BackCompat):
+    &quot;&quot;&quot;CIFAR100Instance 数据集。
+    &quot;&quot;&quot;
+    def __getitem__(self, index):
+        
+        img, target = self.data[index], self.targets[index]
+
+        # 转换数据为 PIL 图像，以保持一致性
+        img = Image.fromarray(img)
+
+        if self.transform is not None:
+            img = self.transform(img)
+
+        if self.target_transform is not None:
+            target = self.target_transform(target)
+
+        return img, target, index
+
+# 获取 CIFAR100 数据集的 DataLoader
+def get_cifar100_dataloaders(batch_size=128, num_workers=8, is_instance=False):
+    &quot;&quot;&quot;
+    cifar 100
+    &quot;&quot;&quot;
+    data_folder = get_data_folder()
+
+    # 训练集和测试集的数据转换
+    train_transform = transforms.Compose([
+        transforms.RandomCrop(32, padding=4),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=mean, std=stdv),
+    ])
+    test_transform = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize(mean=mean, std=stdv),
+    ])
+
+    if is_instance:
+        # 如果 is_instance 为 True，使用自定义的数据集类 CIFAR100Instance
+        train_set = CIFAR100Instance(root=data_folder,
+                                     download=True,
+                                     train=True,
+                                     transform=train_transform)
+        n_data = len(train_set)
+    else:
+        # 否则使用标准的 CIFAR100 数据集类
+        train_set = datasets.CIFAR100(root=data_folder,
+                                      download=True,
+                                      train=True,
+                                      transform=train_transform)
+    train_loader = DataLoader(train_set,
+                              batch_size=batch_size,
+                              shuffle=True,
+                              num_workers=num_workers)
+
+    test_set = datasets.CIFAR100(root=data_folder,
+                                 download=True,
+                                 train=False,
+                                 transform=test_transform)
+    test_loader = DataLoader(test_set,
+                             batch_size=int(batch_size/2),
+                             shuffle=False,
+                             num_workers=int(num_workers/2))
+
+    if is_instance:
+        return train_loader, test_loader, n_data
+    else:
+        return train_loader, test_loader
+
+# 定义 CIFAR100InstanceSample 数据集类，继承自 CIFAR100BackCompat 类
+class CIFAR100InstanceSample(CIFAR100BackCompat):
+    &quot;&quot;&quot;
+    CIFAR100Instance+Sample 数据集
+    &quot;&quot;&quot;
+    def __init__(self, root, train=True,
+                 transform=None, target_transform=None,
+                 download=False, k=4096, mode=&#39;exact&#39;, is_sample=True, percent=1.0):
+        super().__init__(root=root, train=train, download=download,
+                         transform=transform, target_transform=target_transform)
+        self.k = k
+        self.mode = mode
+        self.is_sample = is_sample
+
+        num_classes = 100
+        num_samples = len(self.data)
+        label = self.targets
+       
+        # 创建正样本和负样本的索引列表
+        self.cls_positive = [[] for i in range(num_classes)]
+        for i in range(num_samples):
+            self.cls_positive[label[i]].append(i)
+
+        self.cls_negative = [[] for i in range(num_classes)]
+        for i in range(num_classes):
+            for j in range(num_classes):
+                if j == i:
+                    continue
+                self.cls_negative[i].extend(self.cls_positive[j])
+
+        self.cls_positive = [np.asarray(self.cls_positive[i]) for i in range(num_classes)]
+        self.cls_negative = [np.asarray(self.cls_negative[i]) for i in range(num_classes)]
+
+        if 0 &lt; percent &lt; 1:
+            n = int(len(self.cls_negative[0]) * percent)
+            self.cls_negative = [np.random.permutation(self.cls_negative[i])[0:n]
+                                 for i in range(num_classes)]
+
+        self.cls_positive = np.asarray(self.cls_positive)
+        self.cls_negative = np.asarray(self.cls_negative)
+
+    def __getitem__(self, index):
+        
+        img, target = self.data[index], self.targets[index]
+        
+        # 转换数据为 PIL 图像，以保持一致性
+        img = Image.fromarray(img)
+
+        if self.transform is not None:
+            img = self.transform(img)
+
+        if self.target_transform is not None:
+            target = self.target_transform(target)
+
+        if not self.is_sample:
+            # 直接返回图像、标签和索引
+            return img, target, index
+        else:
+            # 对比例采样样本
+            if self.mode == &#39;exact&#39;:
+                pos_idx = index
+            elif self.mode == &#39;relax&#39;:
+                pos_idx = np.random.choice(self.cls_positive[target], 1)
+                pos_idx = pos_idx[0]
+            else:
+                raise NotImplementedError(self.mode)
+            replace = True if self.k &gt; len(self.cls_negative[target]) else False
+            neg_idx = np.random.choice(self.cls_negative[target], self.k, replace=replace)
+            sample_idx = np.hstack((np.asarray([pos_idx]), neg_idx))
+            return img, target, index, sample_idx
+
+# 获取 CIFAR100InstanceSample 数据集的 DataLoader
+def get_cifar100_dataloaders_sample(batch_size=128, num_workers=8, k=4096, mode=&#39;exact&#39;,
+                                    is_sample=True, percent=1.0):
+    &quot;&quot;&quot;
+    cifar 100
+    &quot;&quot;&quot;
+    data_folder = get_data_folder()
+
+    train_transform = transforms.Compose([
+        transforms.RandomCrop(32, padding=4),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=mean, std=stdv),
+    ])
+    test_transform = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize(mean=mean, std=stdv),
+    ])
+
+    # 创建 CIFAR100InstanceSample 数据集对象
+    train_set = CIFAR100InstanceSample(root=data_folder,
+                                       download=True,
+                                       train=True,
+                                       transform=train_transform,
+                                       k=k,
+                                       mode=mode,
+                                       is_sample=is_sample,
+                                       percent=percent)
+    n_data = len(train_set)
+    train_loader = DataLoader(train_set,
+                              batch_size=batch_size,
+                              shuffle=True,
+                              num_workers=num_workers)
+
+    test_set = datasets.CIFAR100(root=data_folder,
+                                 download=True,
+                                 train=False,
+                                 transform=test_transform)
+    test_loader = DataLoader(test_set,
+                             batch_size=int(batch_size/2),
+                             shuffle=False,
+                             num_workers=int(num_workers/2))
+
+    return train_loader, test_loader, n_data
+</code></pre>
+<h1>综述</h1>
+<h2>Review of Recent Distillation Studies</h2>
+<pre><code class="language-json">References 
+1. Kunlong Chen, Liu Yang, Yitian Chen, Kunjin Chen, Yidan Xu, and Lujun Li. GP-NAS-ensemble: a model for the NAS Performance Prediction. In CVPRW.(2022) 
+2. Jang Hyun Cho and Bharath Hariharan. On the efficacy of knowledge distillation. In ICCV.(2019)
+3. Peijie Dong, Lujun Li, and Zimian Wei. DisWOT: Student Architecture Search for Distillation WithOut Training In CVPR.(2023) 
+4. Peijie Dong, Xin Niu, Lujun Li, Zhiliang Tian, Xiaodong Wang, Zimian Wei, Hengyue Pan, and Dongsheng Li.RD-NAS: Enhancing One-shot Supernet Ranking Ability via Ranking Distillation from Zero-cost Proxies. arXiv preprint arXiv:2301.09850 (2023). 
+5. Peijie Dong, Xin Niu, Lujun Li, Linzhen Xie, Wenbin Zou, Tian Ye, Zimian Wei, and Hengyue Pan. PriorGuided One-shot Neural Architecture Search. arXiv preprint arXiv:2206. 13329 (2022). 
+6. Peijie Dong, Xin Niu, Zhiliang Tian, Lujun Li, Xiaodong Wang, Zimian Wei, Hengyue Pan, and Dongsheng Li. Progressive Meta-Pooling Learning for Lightweight Image Classification Model. arXiv preprint arXiv:2301. 10038 (2023). 
+7. Geoffrey Hinton, Oriol Vinyals, and Jeff Dean. Distilling the Knowledge in a Neural Network. arXiv preprint arXiv:1503.02531 (2015). 
+8. Yiming Hu, Xingang Wang, Lujun Li, and Qingyi Gu. Improving one-shot NAS with shrinking-andexpanding supernet. Pattern Recognition (2021). 
+9. Lujun Li. Self-Regulated Feature Learning via Teacher-free Feature Distillation. In ECCV.(2022) 
+10. Lujun Li and Zhe Jin. Shadow Knowledge Distillation: Bridging Offline and Online Knowledge Transfer In NeuIPS.(2022) 
+11. Lujun Li, Liang Shiuan-Ni, Ya Yang, and Zhe Jin. Boosting Online Feature Transfer via Separable Feature Fusion In IJCNN.(2022) 
+12. Lujun Li, Liang Shiuan-Ni, Ya Yang, and Zhe Jin. Teacher-free Distillation via Regularizing Intermediate Representation. In IJCNN.(2022) 
+13. Lujun Li, Yikai Wang, Anbang Yao, Yi Qian, Xiao Zhou, and Ke He. Explicit Connection Distillation. In ICLR. (2020) 
+14. Li Liu, Qinwen Huang, Sihao Lin, Hongwei Xie, Bing Wang, Xiaojun Chang, and Xiao-Xue Liang. Exploring Inter-Channel Correlation for Diversitypreserved Knowledge Distillation. ICCV (2021). 
+15. Yifan Liu, Changyong Shun, Jingdong Wang, and Chunhua Shen. Structured knowledge distillation for dense prediction. arXiv preprint, arXiv:1903.04197 
+(2019). 
+16. Seyed Iman Mirzadeh, Mehrdad Farajtabar, Ang Li, Nir Levine, Akihiro Matsukawa, and Hassan Ghasemzadeh. Improved knowledge distillation via teacher assistant. In AAAI.(2020) 
+17. Wonpyo Park, Yan Lu, Minsu Cho, and Dongju Kim. Relational Knowledge Distillation. In CVPR.(2019) 
+18. Jie Qin, Jie Wu, Xuefeng Xiao, Lujun Li, and Xingang Wang. Activation Modulation and 
+Recalibration Scheme for Weakly Supervised Semantic Segmentation. In AAAI.(2022) 、
+19. Tao Wang, Li Yuan, Xiaopeng Zhang, and Jiashi Feng. Distilling object detectors with fine-grained feature imitation. In CVPR.(2019) 
+20. Zimian Wei, Hengyue Pan, Lujun Li Li, Menglong Lu, Xin Niu, Peijie Dong, and Dongsheng Li. ConvFormer: Closing the Gap Between CNN and Vision Transformers. arXiv preprint arXiv:2209.07738 (2022). 
+21. Liu Xiaolong, Li Lujun, Li Chao, and Anbang Yao. NORM: Knowledge Distillation via N-to-One Representation Matching. In ICLR.(2023) 
+22. Guodong Xu, Ziwei Liu, Xiaoxiao Li, and Chen Change Loy. Knowledge distillation meets selfsupervision. In ECCV.(2020) 
+23. Kaiyu Yue, Jiangfan Deng, and Feng Zhou. Matching Guided Distillation. ArXiv (2020). 
+24. Sukmin Yun,Joon-Seok Park, Kimin Lee, andJinwoo Shin. Regularizing Class-Wise Predictions via SelfKnowledge Distillation. In CVPR.(2020) 
+
+1. 陈坤龙，杨柳，陈一天，陈坤金，徐一丹，李陆军。GP-NAS-ensemble: NAS性能预测模型。在CVPRW。(2022)
+
+2. 张显赵和Bharath Hariharan。论知识蒸馏的功效。在ICCV。(2019)
+https://zhuanlan.zhihu.com/p/592670743
+
+3.董培杰，李陆军，魏子勉。DisWOT:未经过CVPR训练的蒸馏学生架构搜索。(2023)
+
+4. 董培杰，牛鑫，李陆军，田志良，王晓东，魏子勉，潘恒月，李东生。RD-NAS:通过零成本代理的排序蒸馏来增强一次性超级网络排序能力。arXiv预印本arXiv:2301.09850(2023)。
+
+5. 董培杰，牛鑫，李陆军，谢林珍，邹文斌，叶田，魏子勉，潘恒月。先前引导一次性神经架构搜索。arXiv预印本arXiv:2206。13329(2022)。
+
+6. 董培杰，牛鑫，田志良，李陆军，王晓东，魏子勉，潘恒月，李东生。轻量级图像分类模型的渐进式元池学习。arXiv预印本arXiv:2301。10038(2023)。
+
+7. Geoffrey Hinton, Oriol Vinyals和Jeff Dean。在神经网络中提取知识。arXiv预印本:1503.02531(2015)。
+
+8. 胡一鸣，王新刚，李陆军，顾青义。通过收缩和扩展超级网络改进一次性NAS。模式识别(2021)。
+
+9. Lujun李。通过无教师特征蒸馏的自我调节特征学习。在大会。(2022)
+
+10. 李陆军和金哲。影子知识蒸馏:弥合NeuIPS的离线和在线知识转移。(2022)
+
+11. 李陆军，梁淑妮，杨亚，金哲。基于可分离特征融合的IJCNN在线特征迁移研究。(2022)
+
+12. 李陆军，梁淑妮，杨亚，金哲。基于正则化中间表示的无教师蒸馏。在IJCNN。(2022)
+
+13. 李陆军，王一凯，姚安邦，钱毅，周晓，何珂。显式连接蒸馏。在ICLR。(2020)
+
+14. 刘丽，黄勤文，林思豪，谢宏伟，王兵，常小军，梁小雪。探索渠道间的相关性多样性保存知识蒸馏。ICCV(2021)。
+
+15. 刘一凡，顺长勇，王敬东，沈春华。面向密集预测的结构化知识精馏。[j] .中国科学:自然科学版
+
+（2019）.
+
+16. Seyed Iman Mirzadeh, Mehrdad Farajtabar, Ang Li, Nir Levine, Akihiro Matsukawa和Hassan Ghasemzadeh。通过助教改进知识提炼。在AAAI。(2020)
+
+17. 朴元杓、卢燕、赵敏洙、金东柱。关系知识蒸馏。在CVPR。(2019)
+
+18. 秦杰，吴杰，肖雪峰，李陆军，王新刚。激活调制和
+
+弱监督语义分割的再校准方案。在AAAI.(2022)中，
+
+19. 王涛，袁莉，张小鹏，冯佳实。基于细粒度特征模仿的目标检测器提取。在CVPR。(2019)
+
+20.魏子勉，潘恒月，李陆军，卢梦龙，牛鑫，董培杰，李东生。conformer:缩小CNN和视觉变压器之间的差距。arXiv预印本:2209.07738(2022)。
+
+21. 刘小龙，李陆军，李超，姚安邦。规范:基于n -to- 1表示匹配的知识蒸馏。在ICLR。(2023)
+
+22. 徐国栋，刘子伟，李晓晓，刘晨变。知识升华会自我监督。在大会。(2020)
+
+23. 岳开宇，邓江凡，周峰。匹配引导蒸馏。ArXiv(2020)。
+
+24. 尹淑敏、朴俊锡、李基民、申振宇。通过自我知识蒸馏规范类智能预测。在CVPR。(2020)
+</code></pre>
+<h2>Curriculum Temperature for Knowledge Distillation(AAAI 2023)</h2>
+<pre><code>https://zhuanlan.zhihu.com/p/605552428
+</code></pre>
+<p>附件是Instance-wise Temperature的代码和训练log。</p>
+<p>把instance-wise加入进去之后，在算kl loss的时候一个非常直接的实现是：</p>
+<pre><code class="language-python">KD_loss = 0
+
+for i in range(T.shape[0]):
+
+  KD_loss += KL_Loss1(y_s[i], y_t[i], T[i])
+
+KD_loss /= T.shape[0]
+</code></pre>
+<p>加入code里面之后就可以run起来。</p>
+<h2><strong>Better Teacher Better Student: Dynamic Prior Knowledge for Knowledge Distillation</strong>(ICLR 2023 审稿中)</h2>
+<p><strong>并不是Teacher模型越优秀，Student的学习效果就越好，可能存在着更大的gap导致学习效果的下降</strong></p>
+<p>Student很难“理解”大模型提取的高阶语义。使用规模较大的Teacher时，这一问题会加剧，它使Student的准确性与Teacher模型的能力成<strong>负相关</strong></p>
+<p><img src="Distilling%20Knowledge.assets/image-20230915153834599.png" alt="image-20230915153834599"></p>
+<p><img src="Distilling%20Knowledge.assets/image-20230915154752532.png" alt="image-20230915154752532"></p>
+<p>Fs和Ft分别表示来自学生和老师的特征映射。Ts和Tt分别表示学生和教师转换模块，它们对齐Fs和Ft的维度。Df是可以计算两个特征映射之间距离的函数，例如L1-范数或L2-范数。</p>
+<p>Student每次获得Feature Map后都会随机mask空间上的一部分，然后和Teacher进行互补融合，通过这种方式来辅助学习，可以认为在与Teacher的特征减小gap。</p>
+<h3><strong>动态参数</strong></h3>
+<p><strong>建立特征间隙和掩蔽比之间的联系</strong></p>
+<p>CKA越低，师生之间的特征差距越大。掩蔽比越高，学生遮挡的特征区域越大，教师提供的对应区域越大。</p>
+<p>动态参数策略是根据相似度调整的，CKA体现两个部分的相似程度，CKA越大则相似程度越高，则此时认为gap并不大，如此一来就可以用适当的难度学习，太难则申请用更多的Teacher来帮助自己，这种融合策略缓解了成绩下降的问题</p>
+<p><img src="Distilling%20Knowledge.assets/image-20230915155848832.png" alt="image-20230915155848832"></p>
+<p>CKA通过计算平均 HISC分数，衡量两个batch之间的相似度</p>
+<h3>实验</h3>
+<p><img src="Distilling%20Knowledge.assets/image-20230915160607244.png" alt="image-20230915160607244"></p>
+<p><img src="Distilling%20Knowledge.assets/image-20230915160659988.png" alt="image-20230915160659988"></p>
+<p><strong>相较于DKD和KD震荡的过程，DPK保持单调递增</strong></p>
+<p><img src="Distilling%20Knowledge.assets/image-20230915160845868.png" alt="image-20230915160845868"></p>
+<p>=&gt;   老师越好，蒸馏效果越好</p>
+<h3>可视化</h3>
+<p><img src="Distilling%20Knowledge.assets/image-20230915161345717.png" alt="image-20230915161345717"></p>
+<p>​															ResNet18与ResNet34的CKA相似性。</p>
+<p>​						原始模型(左)、由ICKD训练的模型(中)、由DPK训练的模型(右)之间的CKA相似性。</p>
+<p>实验在<strong>ImageNet验证集</strong>(12800个样本)上进行。在最后一个阶段，计算的CKA的批大小为32，因此每个实验有400个CKA值。对这些值进行排序，并将之组织为热图表示。值越大，特征越相似。</p>
+<h2>Teach Less, Learn More: On the Undistillable Classes in Knowledge Distillation(NIPS 2022)</h2>
+<p>主题: <strong>探索什么在阻碍蒸馏</strong></p>
+<p>切入点: 蒸馏过程中larger teacher, worse student的现象很普遍，之前的研究认为是小模型的容量小于Teacher，所以表达效果不够充分。</p>
+<p>作者认为不充分仅发生于一些“可蒸馏性”差的类别，并不是所有数据类别的共性，</p>
+<pre><code>The undistillable classes are a direct result of the inefficacy of large teachers in distillation
+</code></pre>
+<p>即一些class并不适合蒸馏，如果把这一部分剔除掉会获得更好的效果。</p>
+<p><img src="Distilling%20Knowledge.assets/image-20230915162811589.png" alt="image-20230915162811589"></p>
+<h2>Asymmetric Temperature Scaling Makes Larger Networks Teach Well Again(NeurIPS 2022)</h2>
+<h2><strong>2.On the efficacy of knowledge distillation</strong>(<a href="https://zhuanlan.zhihu.com/p/592670743">ICCV 2019</a>)</h2>
+<p><strong>结论: 早停有助于提高KD的效果</strong></p>
+<p>很多情况下Student并不能随着Teacher的变强而提高, 可能原因：能力不匹配 </p>
+<p>​				<strong>解决  =&gt; 寻找对应的典型策略来避免。</strong></p>
+<p><img src="Distilling%20Knowledge.assets/image-20230915115516229.png" alt="image-20230915115516229"></p>
+<p><strong>实验部分：</strong>
+<img src="Distilling%20Knowledge.assets/image-20230915115840842.png" alt="image-20230915115840842"></p>
+<p>横轴对应Teacher的深度和宽度</p>
+<p>左图Teacher模型是WRN K-1，K从40到250代表变深</p>
+<p>右图Teacher模型是WRN 16/28-K，K从1到8表示模型宽</p>
+<p>结论： 并不总是Teacher容量越大Student的表现越好，Teacher的准确性本身并不是KD的有效度量。</p>
+<p><img src="Distilling%20Knowledge.assets/image-20230915115845517.png" alt="image-20230915115845517"></p>
+<p>​																			ResNet18在ImageNet上的对比，</p>
+<p>红线 =&gt; 从头训练，</p>
+<p>蓝线 =&gt; ResNet34蒸馏得到，</p>
+<p>发现：蒸馏开始时变现较好但结尾表现又不如全训练的模型。</p>
+<p>推测:	因为ImageNet太大，而Student容量不足导致了欠拟合，在最后一个阶段，只能以牺牲CE为代价来继续优化KD Loss。</p>
+<p><strong>在一个不错的阶段就及时停止，这个时候虽然训练Loss还不够小但是保留了泛化性，能避免过度降低Loss导致跑偏</strong></p>
+<p><strong>启发 =&gt; 为KD划分不同阶段。</strong></p>
+<p><img src="Distilling%20Knowledge.assets/image-20230915151956325.png" alt="image-20230915151956325"></p>
+<p><strong>对比了5代顺序蒸馏和集成的效果，并不都比直接训练的Scratch要好，集成效果表现更差一点，集成模型比较一般的原因可能是因为顺序蒸馏之间存在较强的关联。</strong></p>
+<p><img src="Distilling%20Knowledge.assets/image-20230915151346005.png" alt="image-20230915151346005"></p>
+<p>5代蒸馏后的Teacher模型Error较低，但是Student水平反而不如Scratch蒸馏的情况</p>
+<p>说明多次重复蒸馏对于Teacher的准确性是有帮助的，但损害了Teacher信息的再次传递</p>
+<p>能否更好的把能力传递给Student，也是评估Teacher模型能力的一个角度</p>
+<p><img src="Distilling%20Knowledge.assets/image-20230915151501187.png" alt="image-20230915151501187"></p>
+<p>在每个阶段都加入ESKD，一大优点是虽然前期能快速降低Loss，在蒸馏前1/3阶段就能有不错的Error下降，但是之后的效果几乎是负面的，所以提出多阶段的ESKD。</p>
+<p><img src="Distilling%20Knowledge.assets/image-20230915152016424.png" alt="image-20230915152016424"></p>
+<p><img src="Distilling%20Knowledge.assets/image-20230915152106514.png" alt="image-20230915152106514"></p>
+<h2><strong>16.Improved knowledge distillation via teacher assistant</strong></h2>
+<p><strong>当教师网络和学生网络之间的差异过大时，会出现知识蒸馏效率下降的情况。</strong></p>
+<p>**方法 =&gt; **</p>
+<p>​		<strong>引入了多步知识蒸馏，即采用中等规模的网络（教师助理TA）来弥合学生和老师之间的差距</strong></p>
+<p><img src="Distilling%20Knowledge.assets/image-20230912120043401.png" alt="image-20230912120043401"></p>
+<h2>Deep mutual learning. In CVPR, 2018.</h2>
+<p>=&gt;    <strong>剥离了教师，学生网络的概念，提出了一个与蒸馏模型不同但又相关的概念——相互学习（mutual learning）。</strong></p>
+<p><img src="Distilling%20Knowledge.assets/image-20231008140748364.png" alt="image-20231008140748364"></p>
+<p>​	蒸馏模型从一个强大的、预先培训过的教师网络开始，然后将知识传递给一个小的、未经训练的学生网络，这种传递方式是一条<strong>单向</strong>的通路。</p>
+<p>​	与之相反，在相互学习中，从一组未经训练的学生网络开始，它们同时学习，共同解决任务。在训练过程中，每个学生网络的损失函数由两部分组成：</p>
+<p>（1）传统的监督学习损失</p>
+<p>（2）模仿损失</p>
+<p>​	使每个学生的预测类别与其他学生的类别预测概率保持一致。实验证明，在这种基于同伴教学（peer-teaching）的训练中，每个学生网络的学习效果都比在传统的监督学习场景中单独学习要好得多。</p>
+<p>​	虽然传统的蒸馏模型需要一个比预期学生网络更大、更强大的教师网络，但事实证明，在许多情况下，几个大型网络的相互学习也比独立学习提高了性能。</p>
+<p><strong>QUESTION</strong></p>
+<p>​	为什么这种相互学习的策略会比蒸馏模型更有用？</p>
+<p>​	如果整个训练过程都是从一个小的且未经预训练的网络开始，那么网络中额外的知识从哪里产生？</p>
+<p>​	为什么它会收敛的好，而不是被群体思维所束缚，造成“瞎子带领瞎子&quot;（the blind lead the blind）的局面？</p>
+<p>作者解释:</p>
+<p>​	每个学生网络主要受传统的监督学习损失的指导，这意味着他们的表现通常会提高，而且也限制了他们作为一个群体任意地进行群体思维的能力。有了监督学习，所有的网络很快就可以为每个训练实例预测相同的标签，这些标签大多是正确且相同的。但是由于每个网络从不同的初始条件开始，它们对下一个最有可能的类的概率的估计是不同的，而正是这些secondary信息，为蒸馏和相互学习提供了额外的知识。在相互学习网络中，每个学生网络有效地汇集了他们对下一个最有可能的类别的集体估计，根据每个训练实例找出并匹配其他最有可能的类会增加每个学生网络的后验熵，这有助于得到一个更健壮和 <strong>泛化能力</strong> 更强的网络。</p>
+<p>tips：</p>
+<p>​	后验熵（posterior entropy）是信息理论中的一个概念，用于衡量随机变量的不确定性或信息量。在上下文中，它是指在给定一些观测数据或条件下，随机变量的不确定性或混乱程度。</p>
+<p>​	后验熵衡量了在已知某些信息或条件下，随机变量X的不确定性。如果后验熵较低，表示在给定条件下X的值较为确定，信息量较少；如果后验熵较高，表示在给定条件下X的值较为不确定，信息量较多。</p>
+<p>在深度学习中，后验熵常用于衡量模型对某个任务或分类的不确定性，这对于模型的泛化和鲁棒性评估非常重要。当后验熵较高时，模型可能需要更多的数据或更复杂的训练来降低不确定性。如果您有更多问题或需要进一步解释，请随时提问。</p>
+<h2>Decoupled Knowledge Distillation</h2>
+<h3>AP AP50 AP75</h3>
+<p><img src="Distilling%20Knowledge.assets/image-20230422190841605.png" alt="image-20230422190841605"></p>
+<h2>DeepVID: Deep Visual Interpretation and Diagnosis for Image Classifiers via Knowledge Distillation</h2>
+<p><img src="Distilling%20Knowledge.assets/image-20230423155355104.png" alt="image-20230423155355104"></p>
+
+</body>
+</html>

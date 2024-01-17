@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="http://139.159.253.241:3000/stylesheets/github.css">
+    <title>Document</title>
+</head>
+<body>
+    <h2>fontawsome</h2>
+<p>fontawsome:<a href="mailto:2119495210@qq.com">2119495210@qq.com</a>    asdf3698</p>
+<h2>npm</h2>
+<p>npm 查看 npm 全局安装的包，是否安装了某个包</p>
+<h3>查看全局安装的包</h3>
+<p>npm list -g --depth 0</p>
+<p>-g:全局的安装包</p>
+<h3>list：已安装的node包</h3>
+<p>–depth 0：列表搜索深度0级 不加这参数 会默认所有
+npm list -g </p>
+<p>npm list -g --depth 1</p>
+<p>查看全局是否安装过某个包
+npm ls 包/插件名称 -g</p>
+<p>查看本地/当前文件下是否安装某个包（不加-g）
+npm ls 包/插件名称 </p>
+<h3>下载express包</h3>
+<p>npm install express --save</p>
+<h3>查看全局安装路径</h3>
+<p>npm root -g</p>
+<h3>查看npm的基础设置</h3>
+<p>npm config ls</p>
+<h3>查看安装目录路径</h3>
+<p>npm config get prefix</p>
+<h3>json-server启动命令</h3>
+<p>json-server --watch db.json</p>
+<h3>npm 怎么查看一个包的历史版本</h3>
+<p>要查看一个npm包的历史版本，可以使用以下命令：</p>
+<pre><code>复制代码npm view &lt;package-name&gt; versions
+</code></pre>
+<p>其中，将<code>&lt;package-name&gt;</code>替换为你想要查询的npm包的名称。这个命令会显示出该npm包的所有发布版本号。</p>
+<p>你也可以在输出中加入<code>--json</code>选项，以JSON格式的方式获取版本信息，例如：</p>
+<pre><code>复制代码npm view &lt;package-name&gt; versions --json
+</code></pre>
+<p>无论是哪种方式，都能够让你获取该npm包历史版本的完整列表。</p>
+
+</body>
+</html>

@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="http://139.159.253.241:3000/stylesheets/github.css">
+    <title>Document</title>
+</head>
+<body>
+    <p>[TOC]</p>
+<h1>facebook</h1>
+<p><img src="%E4%B8%80%E4%BA%9B%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E4%BD%BF%E7%94%A8.assets/image-20230909151103647.png" alt="image-20230909151103647"></p>
+<h1>模之屋</h1>
+<p><img src="%E4%B8%80%E4%BA%9B%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E4%BD%BF%E7%94%A8.assets/image-20230927101823632.png" alt="image-20230927101823632"></p>
+<h1>mpv</h1>
+<p><a href="https://www.bilibili.com/read/cv13479755">自用mpv播放器input.conf、mpv.conf设置方案 - 哔哩哔哩 (bilibili.com)</a></p>
+<p>MPV播放器安装、配置以及使用演示视频</p>
+<p>mpv是一个自由开源的跨平台媒体播放器，具有轻量、兼容性好、播放性能优秀等特点</p>
+<p>mpv官网：<a href="https://mpv.io">https://mpv.io</a></p>
+<p>Windows版下载地址：<a href="https://sourceforge.net/projects/mpv-player-windows/files/">https://sourceforge.net/projects/mpv-player-windows/files/</a></p>
+<p>脚本介绍、网盘分享：<a href="https://www.bilibili.com/read/cv15690307">https://www.bilibili.com/read/cv15690307</a></p>
+<p>mpv的默认mpv.conf设置为最大兼容性而定，因而默认软解，这里将之改为硬解，并对一些其他常用选项做出修改。mpv有其一套默认快捷键设置，但不符合个人习惯，也难以记忆。在阅读官方文档、参考网友配置方法后编写了以下input.conf快捷键方案。所有内容都可以根据读者需求自行修改。</p>
+<p>使用方法：复制以下内容到一个txt文件中，分别改名称和后缀为mpv.conf、input.conf，Windows系统，在mpv.exe所在目录创建一个portable_config文件夹置于其内（高优先级、绿色便携化，推荐），或放到%appdata%/mpv文件夹中（全局默认位置）；类Unix平台（Linux/macOS等）则放在/usr/local/etc/mpv/或~/.config/mpv/（注意，.开头的文件夹是隐藏的）。</p>
+<p>portable_config文件夹
+地址栏输入%appdata%/mpv，回车即可
+建议使用支持语法高亮的文本编辑器，如开源的notepad3，相比记事本显示效果更佳。</p>
+<h2>mpv.conf</h2>
+<pre><code>##解码/渲染设置##
+
+#视频输出驱动，Windows可选gpu/gpu-next/direct3d等，gpu最成熟稳定，gpu-next为实验性，direct3d只在为兼容老旧系统硬件时使用
+vo=gpu
+#设置硬解api，auto/auto-copy/no 对应 自动/自动-拷回内存/软解
+hwdec=auto
+#渲染使用的api，可选auto/d3d11/opengl/vulkan
+gpu-api=auto
+#尝试使用硬解的格式(默认h264,vc1,hevc,vp8,vp9,av1；all是特殊值指全部格式)
+#hwdec-codecs=all
+#gpu-api=d3d11时（win默认api）多GPU平台指定使用的GPU，GPU名称参考设备管理器。此选项根据首字符串识别，如果不是同一家的GPU则无需输入完整名称。若使用Vulkan则为vulkan-device=
+#d3d11-adapter=AMD
+#d3d11-adapter=Intel
+#d3d11-adapter=NVIDIA
+#d3d11va零拷贝模式，可降低gpu 3D engine占用
+#d3d11va-zero-copy=yes
+
+##缓存设置##
+
+#开启缓存
+cache=yes
+#最大缓存大小（KiB或MiB）
+demuxer-max-bytes=64MiB
+#用内存而不是磁盘缓存
+cache-on-disk=no
+#缓存时间
+#cache-secs=8
+
+##播放状态记录##
+
+#退出时记住播放状态（包括是否暂停、音量、播放速度、位置等）
+save-position-on-quit
+#播放状态保存位置
+#watch-later-directory=D:\Cache\watch_later
+#不记录是否暂停（除了pause同理可写fullscreen,mute,speed,ontop等参数）
+watch-later-options-remove=pause
+#记录播放状态时忽略文件路径（便于备份/共享，但会影响同名文件区分）
+#ignore-path-in-watch-later-config
+
+##窗口设置##
+
+#贴边吸附（限windows平台）
+snap-window=yes
+#高分屏窗口缩放
+#hidpi-window-scale=no
+#无边框
+#border=no
+#置顶
+ontop=yes
+#全屏
+#fullscreen=yes
+#窗口保持视频比例
+#keepaspect-window=no
+#播完后保持打开（yes|no|always）
+#keep-open=no
+#将窗口缩放窗口模式下至大、至小占屏幕的百分比
+#autofit-larger=90%x90%
+#autofit-smaller=30%x30%
+#设置默认打开的窗口大小、位置(下例是1280x720、屏幕左下角）
+#geometry=1280x720+100%+100%
+
+##OSD设置##
+
+#关闭屏上信息条显示
+#osd-bar=no
+#osd-bar宽度[1,100],屏幕宽度的百分比
+osd-bar-w=100
+#osd-bar高度[0.1,50]屏幕高度的百分比
+osd-bar-h=0.4
+#位置[-1,1]x为左到右，y为上到下
+osd-bar-align-y=1
+#OSD颜色，RGB16进制表示
+osd-color=&quot;#7FFFD4&quot;
+#OSD信息位置、字体大小、边框大小(左中右left/center/right,上中下top/center/buttom)
+osd-align-x=left
+osd-align-y=top
+osd-font-size=22
+osd-border-size=2
+#设置OSD文本信息的持续时间（毫秒）
+osd-duration=2000
+#OSD随窗口大小缩放
+osd-scale-by-window=no
+
+##视频/音频/字幕/截图设置##
+
+#读取杜比视界元数据(需要将vo=gpu改为实验性的vo=gpu-next)
+#vf=format:dolbyvision=yes
+#色彩管理
+#icc-profile-auto=yes
+#视频同步
+#video-sync=display-resample
+#interpolation=yes
+#变速播放时的音调修正
+audio-pitch-correction=yes
+#音调修正的不静音最大倍速
+#af=scaletempo2=max-speed=4
+#自动加载外部字幕文件方式。（fuzzy加载同文件夹含有视频文件名的字幕文件）
+sub-auto=fuzzy
+#自动加载含有视频文件名的音频文件
+#audio-file-auto=fuzzy
+#字体大小，此值是以高度为720的屏幕为比例，更大或更小的屏幕会缩放
+sub-font-size=44
+#未指定样式的字幕字体
+sub-font=sans-serif
+#未指定样式的字幕边框
+sub-border-size=2
+#强制外挂ass字幕可使用黑边
+sub-ass-force-margins=yes
+#指定优先使用音轨（使用ISO-639语言代码，优先级按序递减）
+alang=zh,chi,chs,sc,zh-hans,en,eng
+#指定优先使用字幕轨（同上）
+slang=zh,chi,chs,sc,zh-hans,en,eng
+#列表播放循环方式，N|inf|no，循环N次/一直循环/不循环
+loop-playlist=inf
+#启动默认音量
+volume=90
+#程序最大音量[100,1000]
+volume-max=100
+#截屏文件格式（可选：jpg、jpeg、png、webp、jxl）
+screenshot-format=jpg
+#截屏文件保存路径
+#screenshot-directory=C:\Image
+
+##杂项##
+
+#禁用内置快捷键方案，builtin与default相比不影响脚本的预设快捷键
+no-input-builtin-bindings
+#关闭内置屏上控制On Screen Controller(OSC)
+#osc=no
+#输出日志到桌面
+#log-file = &quot;~~desktop/mpv.txt&quot;
+#录制媒体流到指定文件
+#stream-record=C:\Videos\output.mp4
+
+##配置组##
+#不要在配置组之间插入常规配置
+
+#暂停或全屏时不置顶
+[ontop-playback]
+profile-cond=pause or fullscreen
+ontop=no
+profile-restore=copy
+
+#当文件所在路径包含&#39;music&#39;时，禁用记录播放状态、OSC常驻
+#[music]
+#profile-cond=require &#39;mp.utils&#39;.join_path(working_directory, path):match(&#39;music&#39;) ~= nil
+#save-position-on-quit=no
+#script-opts-add=osc-visibility=always
+#profile-restore=copy 
+</code></pre>
+<h2>input.conf</h2>
+<pre><code>MBTN_LEFT 		ignore					#鼠标左键 无操作
+MBTN_LEFT_DBL 	cycle fullscreen		#左键双击 切换全屏
+MBTN_RIGHT 		cycle pause				#右键 切换暂停
+MBTN_MID		ignore 					#鼠标中键 无操作
+MBTN_BACK 		playlist-prev			#侧键向前 播放列表上一个
+MBTN_FORWARD 	playlist-next			#侧键向后 播放列表下一个
+WHEEL_UP 		add volume 5			#滚轮向上 音量+5
+WHEEL_DOWN 		add volume -5			#滚轮向下 音量-5
+WHEEL_LEFT 		seek 2 					#滚轮向左 向前2秒（适用触摸板）
+WHEEL_RIGHT 	seek -2 				#滚轮向右 向后2秒
+
+ESC 	set fullscreen no 				#ESC 退出全屏
+SPACE 	cycle pause 					#空格 切换暂停
+ENTER 	cycle fullscreen 				#回车 切换全屏
+KP_ENTER cycle fullscreen 				#小键盘回车 切换全屏
+
+UP  		add volume 2 				#方向键上 音量+2
+DOWN  		add volume -2 				#方向键下 音量-2
+Shift+UP  	add volume 10 				#音量+10
+Shift+DOWN  add volume -10 				#音量-10
+LEFT  		seek -2 					#方向键左 后退2秒（快速但不精确）
+RIGHT 		seek  2 					#方向键右 前进2秒
+Shift+LEFT  seek -60 					#后退60秒
+Shift+RIGHT seek 87 exact				#前进87秒（带exact较慢但精确）
+Ctrl+UP 	add audio-delay -0.1		#音频延迟-0.1
+Ctrl+DOWN 	add audio-delay +0.1		#音频延迟+0.1
+Ctrl+LEFT 	add sub-delay -0.1			#字幕延迟-0.1
+Ctrl+RIGHT  add sub-delay 0.1			#字幕延迟+0.1
+
+PGUP 	playlist-prev					#播放列表上一个
+PGDWN 	playlist-next					#播放列表下一个
+HOME 	add chapter -1					#上一章节
+END 	add chapter 1					#下一章节
+F8 		show-text ${playlist}			#F8显示播放列表
+F9 		show-text ${track-list}  		#F9显示视频、音频、字幕轨道信息
+F10 	playlist-shuffle; show-text &quot;playlist-shuffle&quot; #乱序播放列表
+INS 	script-message-to console type &quot;loadfile &quot; #打开控制台并输入loadfile ，之后可直接使用shift+INS或ctrl+v粘贴链接，回车播放
+
+z set speed 1.0						#播放速度设为1
+x add speed -0.1					#播放速度-0.1
+c add speed 0.1						#播放速度+0.1
+X multiply speed 0.5				#播放速度x0.5
+C multiply speed 2.0				#播放速度x2
+v frame-back-step					#前一帧
+b frame-step						#后一帧
+n add sub-pos -1					#字幕上移1
+m add sub-pos +1					#字幕下移1
+, add sub-scale -0.05				#字幕缩小5%
+. add sub-scale +0.05				#字幕放大5%
+/ set sub-pos 100;set sub-scale 1;set audio-delay 0;set sub-delay 0 #复原字幕位置&amp;大小&amp;延迟 与 音频延迟
+
+a cycle audio						#切换音轨
+s cycle sub							#切换字幕轨
+d cycle sub-visibility				#切换字幕开/关
+f cycle mute						#静音开/关
+g cycle ontop 						#置顶开/关
+G cycle border 						#无边框开/关
+h cycle-values hwdec &quot;auto&quot; &quot;no&quot; 	#切换硬解软解
+j cycle deinterlace					#切换反交错
+k cycle-values video-aspect-override &quot;16:9&quot; &quot;4:3&quot; &quot;2.35:1&quot; &quot;-1&quot; #循环视频比例
+l ab-loop 							#设置/清除 A-B loop点
+K cycle-values loop-file inf no 	#切换文件循环
+L cycle-values loop-playlist inf no #切换列表循环
+; script-binding osc/visibility 	#切换OSC可视性（常驻、隐藏、自动）
+&#39; cycle-values osd-level &quot;1&quot; &quot;2&quot; &quot;3&quot; 	#切换OSD显示等级
+
+TAB script-binding stats/display-stats-toggle #切换统计信息开/关，1234可翻页
+q 	add brightness -1				#亮度-1
+w 	add brightness 1				#亮度+1
+e 	add contrast -1					#对比度-1
+r 	add contrast 1					#对比度+1
+t 	add gamma -1					#伽马-1
+y 	add gamma 1						#伽马+1
+u 	add saturation -1				#饱和度-1
+i	add saturation 1				#饱和度+1
+o 	add hue -1						#色调-1
+p 	add hue 1						#色调+1
+[ 	set contrast 0; set brightness 0; set gamma 0; set saturation 0; set hue 0 #视频均衡器归零
+] 	show-text &quot;速度=${speed} 置顶=${ontop}   单循环=${loop-file} 全循环=${loop-playlist}   字幕延迟=${sub-delay} 音频延迟=${audio-delay}  亮度=${brightness} 对比度=${contrast} 伽马=${gamma} 饱和度=${saturation} 色调=${hue}&quot; #显示状态信息
+\ show-progress							#显示播放进度
+
+` script-binding console/enable		#打开控制台，ESC退出
+1 set window-scale 0.333 			#设置窗口为视频原输出0.333倍
+2 set window-scale 0.667 			#设置窗口为视频原输出0.667倍
+3 set window-scale 1.0 				#设置窗口为视频原输出大小
+4 add current-window-scale -0.1 	#缩小窗口
+5 add current-window-scale  0.1 	#放大窗口
+6 add video-zoom -0.01 				#缩小视频(log2对数比例)
+7 add video-zoom 0.01 				#放大视频
+8 add panscan -0.1 					#减少裁剪
+9 add panscan 0.1 					#裁剪视频减少黑边
+0 cycle-values &quot;!reverse&quot; video-rotate &quot;no&quot; &quot;90&quot; &quot;180&quot; &quot;270&quot; #反向循环 不旋转/90/180/270
+- set video-zoom 0 ; set panscan 0	#重设视频缩放裁剪
++ screenshot window 				#带界面（OSC/OSD）截图
+= screenshot video 					#视频截图
+</code></pre>
+<h1>wampserver</h1>
+<pre><code>http://127.0.0.1/phpmyadmin
+</code></pre>
+<h1>Ubuntu 18.04上安装Git与入门教程</h1>
+<h1>metamask</h1>
+<pre><code>密码: 5277420asdf
+
+账户私钥助记词
+penalty salon genuine
+abstract blame subject
+outer pelican slow
+awesome mixture small
+</code></pre>
+<p>领取0.02CSB	:	<code>https://faucet.crossbell.io/</code></p>
+<h1>VPN-v2net</h1>
+<pre><code>官网
+https://xc.v2ray.cx/clientarea.php?action=productdetails&amp;id=152916
+</code></pre>
+<p><img src="%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE&%E5%B7%A5%E5%85%B7%E8%B4%A6%E5%8F%B7%E5%AF%86%E7%A0%81.assets/image-20231127133346657.png" alt="image-20231127133346657"></p>
+<p><img src="%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE&%E5%B7%A5%E5%85%B7%E8%B4%A6%E5%8F%B7%E5%AF%86%E7%A0%81.assets/image-20231127133526828.png" alt="image-20231127133526828"></p>
+<h1>windows</h1>
+<p>在Windows上，你可以使用命令行工具来查看特定端口是否被占用，但要注意，通过端口查找到具体的进程和相关文件比较复杂。以下是一些基本的方法：</p>
+<h2>查看端口占用情况：</h2>
+<ol>
+<li><p><strong>使用命令行（Command Prompt）:</strong></p>
+<p>打开命令行窗口，然后运行以下命令：</p>
+<pre><code>netstat -ano | find &quot;3000&quot;
+</code></pre>
+<p>如果端口3000被占用，你将看到相关的信息，包括进程的ID。你可以使用任务管理器（Task Manager）来找到相应ID的进程。</p>
+</li>
+<li><p><strong>使用 PowerShell:</strong></p>
+<p>打开 PowerShell 窗口，运行以下命令：</p>
+<pre><code>Get-NetTCPConnection -LocalPort 3000
+</code></pre>
+<p>这会列出所有使用3000端口的网络连接。</p>
+</li>
+<li><p><strong>使用资源监视器:</strong></p>
+<p>在资源监视器中，你可以查看网络活动，包括使用的端口。打开资源监视器，切换到“网络”选项卡，然后找到“监听端口”列。</p>
+<pre><code>screen -dmS Ter bash -c &quot;sh scripts/dkd+fitFn_res56_res20.sh&quot;
+</code></pre>
+</li>
+</ol>
+<h2>查找进程和相关文件：</h2>
+<ol>
+<li><p><strong>使用任务管理器（Task Manager）:</strong></p>
+<p>打开任务管理器，切换到“详细信息”选项卡，找到占用3000端口的进程。右键点击该进程，选择“打开文件位置”来查看相关文件。</p>
+</li>
+<li><p><strong>使用命令行（Command Prompt）:</strong></p>
+<p>在命令行窗口中，可以使用 <code>tasklist</code> 命令查看所有运行的进程，然后通过进程ID使用 <code>taskkill</code> 命令终止进程。</p>
+<pre><code>tasklist | find &quot;3000&quot;
+</code></pre>
+<p>通过 <code>taskkill</code> 终止进程：</p>
+<pre><code>taskkill /F /PID &lt;进程ID&gt;
+</code></pre>
+</li>
+</ol>
+<p>请注意，这些命令可能需要以管理员身份运行，以便访问某些系统信息。通过这些方法，你可以找到占用3000端口的进程，但找到相关文件可能需要更详细的调查，例如使用文件资源管理器（Windows Explorer）的搜索功能。</p>
+<h2>时间</h2>
+<pre><code>time.windows.com
+
+time-a.nist.gov
+</code></pre>
+<h2>命令行操作</h2>
+<h3>进F盘</h3>
+<pre><code>F:\Your\Path\Here
+</code></pre>
+<p>使用 <code>dir</code> 命令来列出当前目录中的文件和子目录</p>
+<p>在 PowerShell 中，可以使用 <code>ls</code> 或 <code>dir</code></p>
+<p>在 PowerShell 中，你可以使用 <code>Format-Table</code> cmdlet 以表格形式显示详细信息：</p>
+<pre><code>ls | Format-Table
+</code></pre>
+<h3>删除文件 / 删除文件夹</h3>
+<p><strong>删除文件</strong></p>
+<p>在命令提示符中使用 <code>del</code>：</p>
+<pre><code>del 文件名
+</code></pre>
+<p>例如，要删除名为 <code>example.txt</code> 的文件：</p>
+<pre><code>del example.txt
+</code></pre>
+<p>你可以使用通配符 <code>*</code> 来匹配多个文件。例如，要删除当前目录中所有以 <code>.txt</code> 结尾的文件：</p>
+<pre><code>del *.txt
+</code></pre>
+<p>在 PowerShell 中使用 <code>Remove-Item</code>：</p>
+<pre><code>Remove-Item 文件名
+</code></pre>
+<p>例如，删除名为 <code>example.txt</code> 的文件：</p>
+<pre><code>Remove-Item example.txt
+</code></pre>
+<p>同样，你也可以使用通配符 <code>*</code> 来匹配多个文件：</p>
+<pre><code>Remove-Item *.txt
+</code></pre>
+<p>请注意，删除文件是一个不可逆的操作，删除后文件将无法恢复。确保你真正想要删除这些文件，以免造成数据丢失。</p>
+<p><strong>删除文件夹</strong></p>
+<p>在命令提示符中使用 <code>rmdir</code>：</p>
+<pre><code>bashCopy code
+rmdir /s /q 文件夹路径
+</code></pre>
+<ul>
+<li><code>/s</code> 参数表示删除目录及其所有子目录和文件。</li>
+<li><code>/q</code> 参数表示安静模式，即不要求确认删除。</li>
+</ul>
+<p>例如，删除名为 <code>myfolder</code> 的文件夹及其所有内容：</p>
+<pre><code>bashCopy code
+rmdir /s /q myfolder
+</code></pre>
+<p>在 PowerShell 中使用 <code>Remove-Item</code>：</p>
+<pre><code>bashCopy code
+Remove-Item -Recurse -Force 文件夹路径
+</code></pre>
+<ul>
+<li><code>-Recurse</code> 参数表示递归删除，即删除目录及其所有子目录和文件。</li>
+<li><code>-Force</code> 参数表示强制删除，即不要求确认删除。</li>
+</ul>
+<p>例如，删除名为 <code>myfolder</code> 的文件夹及其所有内容：</p>
+<pre><code>bashCopy code
+Remove-Item -Recurse -Force myfolder
+</code></pre>
+<p>请谨慎使用删除命令，确保你真正想要删除这些文件夹及其内容，以免造成数据丢失。</p>
+<h1>typora</h1>
+<pre><code>ctrl [ 退出无序列表
+[TOC] 生成大纲
+</code></pre>
+<p>[Typora链接&amp;锚点](Typora链接&amp;锚点 - 一个人的文章 - 知乎
+<a href="https://zhuanlan.zhihu.com/p/569122051">https://zhuanlan.zhihu.com/p/569122051</a>)</p>
+<ul>
+<li><input disabled="" type="checkbox"> Mercury</li>
+<li><input checked="" disabled="" type="checkbox"> Venus</li>
+</ul>
+<pre><code>1.无序列表相关
+1.1.解决无序列表实心圆与空心圆问题
+Ctrl +Shift+]可打出实心圆
+
+Enter换行或者再敲一个实心圆后按下Tab(缩进)键会变成空心圆
+
+**测试
+
+两者关系类似于一、二级标题
+
+1.2.使用无序列表后换行取消自动缩进
+按两下空格键
+
+Shift+Tab
+
+直接用鼠标点击使用了无序列表的下下行
+————————————————
+版权声明：本文为CSDN博主「戏言QY」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/zwei1999/article/details/115551977
+
+有序列表
+1.加空格然后enter
+</code></pre>
+<img src="CSS.assets/image-20230511130641246.png" alt="image-20230511130641246" style="zoom: 150%;" />
+
+
+
+
+
+<h1>浏览器扩展</h1>
+<p>Proxy SwitchyOmega</p>
+<p><img src="%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE&%E5%B7%A5%E5%85%B7%E8%B4%A6%E5%8F%B7%E5%AF%86%E7%A0%81.assets/image-20231211170146485.png" alt="image-20231211170146485"></p>
+<h1>查看IP</h1>
+<pre><code>https://ip.sb/
+</code></pre>
+<h1>VPN网速测试</h1>
+<pre><code>speedtest.net
+</code></pre>
+
+</body>
+</html>

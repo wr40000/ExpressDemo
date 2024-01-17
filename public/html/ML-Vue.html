@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="http://139.159.253.241:3000/stylesheets/github.css">
+    <title>Document</title>
+</head>
+<body>
+    <pre><code>https://blog.csdn.net/dhaiuda/article/details/95722971
+
+https://blog.csdn.net/dhaiuda/article/details/95587258
+
+HRank: Filter Pruning using High-Rank Feature Map
+http://t.csdn.cn/CNJUg
+
+Pruning Convolutional Neural Networks For Resource Efficient Inference
+http://t.csdn.cn/1g7Le
+</code></pre>
+<p><img src="ML-Vue.assets/image-20230919143457524.png" alt="image-20230919143457524"></p>
+<pre><code>展平操作、特征图相加操作、通道数相加操作以及采样操作
+</code></pre>
+<p>安装环境有问题的包</p>
+<p><img src="ML-Vue.assets/image-20230526191109250.png" alt="image-20230526191109250"></p>
+<p><img src="ML-Vue.assets/image-20230526191044825.png" alt="image-20230526191044825"></p>
+<pre><code>scipy==1.5.4
+ipython-genutils==0.2.0
+opt-einsum==3.3.0
+jupyter-core==4.7.1
+torchsummary==1.5.1
+sklearn==0.0
+torchstat==0.0.7
+ptflops==0.6.4
+opencv-python==4.5.1.48
+tables==3.6.1
+jupyter-client==6.1.12
+pywin32==300
+</code></pre>
+<p>build.vue</p>
+<p><img src="ML-Vue.assets/image-20230629133426644.png" alt="image-20230629133426644"></p>
+<p><img src="ML-Vue.assets/image-20230629133452389.png" alt="image-20230629133452389"></p>
+<p><img src="ML-Vue.assets/image-20230707105915711.png" alt="image-20230707105915711"></p>
+<p><img src="ML-Vue.assets/image-20230807175826014.png" alt="image-20230807175826014"></p>
+<p>更改优化比例</p>
+<p><img src="ML-Vue.assets/image-20230831100854659.png" alt="image-20230831100854659"></p>
+<p><img src="ML-Vue.assets/image-20230831100920897.png" alt="image-20230831100920897"></p>
+<p><img src="ML-Vue.assets/image-20230908155346061.png" alt="image-20230908155346061"></p>
+<pre><code class="language-js">            // 画点
+            // g.selectAll(&#39;circle&#39;)
+            //     .data(dotData)
+            //     .enter()
+            //     .append(&#39;circle&#39;)
+            //     .attr(&#39;class&#39;, (d, i) =&gt; `dot-${parseInt(i / Object.keys(this.obj).length)}`)
+            //     .attr(&#39;r&#39;, &#39;2px&#39;)
+            //     .attr(&#39;cx&#39;, d =&gt; scaleX(d[0]))
+            //     .attr(&#39;cy&#39;, d =&gt; this.scale[this.scaleList[d[0]]](d[1]))
+            //     .attr(&#39;fill&#39;, (d, i) =&gt; {
+            //         if (this.checkList.length != 0 &amp;&amp; this.highLight[index2] != undefined &amp;&amp; this.highLight[index2] == parseInt(i / Object.keys(this.obj).length)) {
+            //             cnt++;
+            //             if (cnt == 3) {
+            //                 cnt = 0;
+            //                 index2++;
+            //             }
+            //             return this.highLightColor
+            //         } else {
+            //             return this.commonColor
+            //         }
+            //     })
+//代码位于
+</code></pre>
+<p><img src="ML-Vue.assets/image-20230912150654813.png" alt="image-20230912150654813"></p>
+<pre><code class="language-vue">&lt;script&gt;
+import * as d3 from &quot;d3&quot;
+import { Checkbox, CheckboxGroup, Popover } from &#39;element-ui&#39;;
+
+export default {
+    components: {
+        CheckboxGroup,
+        Checkbox,
+        Popover,
+    },
+    data() {
+        return {
+            // width: 320,
+            // height: 150,
+            width: 390,
+            height: 200,
+            padding: 16,    // 预留20边界
+            length: 13,
+            scaleList: [&#39;Cosine similarity&#39;, &#39;rank&#39;, &#39;taylor&#39;],
+            obj: {
+                &#39;Cosine similarity&#39;: new Array(1).fill(0).map((item, i) =&gt; 0.8 * Math.random()),
+                // &#39;rank&#39;: [6.625485303175038, 3.4806955891952573, 5.732997113104834, 8.426400555471558, 9.086657380302439,
+                //  8.802827440435511, 1.3886477532063002, 2.0214819228757652, 6.214379738773397, 5.2, 5.897091631121132, 4.6,
+                //   8.938789631200585, 9.984362507129735, 3.2561830062958452, 0.7884999780419255, 9.649223910841956,
+                //   4.973150028288025, 3.5944483630369284, 5.598406400626774],
+                // &#39;rank_clone&#39;: [6.625485303175038, 3.4806955891952573, 5.732997113104834, 8.426400555471558, 9.086657380302439,
+                //  8.802827440435511, 1.3886477532063002, 2.0214819228757652, 6.214379738773397, 5.2, 5.897091631121132, 4.6,
+                //   8.938789631200585, 9.984362507129735, 3.2561830062958452, 0.7884999780419255, 9.649223910841956,
+                //   4.973150028288025, 3.5944483630369284, 5.598406400626774],
+                &#39;rank&#39;: new Array(1).fill(0).map((item, i) =&gt; 10 * Math.random() ),
+                &#39;taylor&#39;: new Array(1).fill(0).map((item, i) =&gt; Math.random()),
+            },
+            boundary: {
+                // 三个值分别代表：最小值、最大值、刻度递增值
+                &#39;Cosine similarity&#39;: [0, 1, 0.2],
+                &#39;rank&#39;: [0, 10, 2],
+                // &#39;rank_clone&#39;: [0, 10, 2],
+                &#39;taylor&#39;: [0, 1, 0.2],
+            },
+            // 三个比例尺，在getPre里算出
+            scale: {},
+            threshold: {
+                &#39;Cosine similarity&#39;: [],
+                &#39;rank&#39;: [],
+                // &#39;rank_clone&#39;: [],
+                &#39;taylor&#39;: [],
+            },
+            lineData: [],
+            commonColor: &#39;#aaaaaa&#39;, // 常规颜色
+            highLightColor: &#39;#fba49f&#39;, // 筛选高亮颜色
+            selectedColor: &#39;#83bcfb&#39;, // 选中颜色
+            commonLineWidth: &#39;1.5px&#39;, // 常规线宽
+            selectedLineWidth: &#39;3px&#39;, // 选中线宽
+            axisColor: &#39;#326992&#39;, // 坐标轴颜色
+            checkList: [],
+            svg: undefined
+        }
+    },
+    computed: {
+
+        // 高亮数据
+        highLight: function () {
+            let res = []
+            // 如果筛选条件为空
+            if (this.checkList.length == 0)
+                res = [];
+            else {
+                let l = [];
+                // 遍历线条数据，筛选符合条件的线id
+                this.lineData.forEach((item, i) =&gt; {
+                    let flag = true;
+                    // 遍历筛选条件
+                    this.checkList.forEach(t =&gt; {
+                        let index = this.scaleList.indexOf(t)
+                        let value = item[index][1]
+                        if (flag &amp;&amp; (value &lt; this.threshold[t][0] || value &gt; this.threshold[t][1]))
+                            flag = false;
+                    })
+                    if (flag) l.push(i);
+                })
+                res = l;
+            }
+            return res;
+        }
+    },
+    watch: {
+        highLight: function () {
+            this.updateChart(this.svg)
+        },
+        checkList: function () {
+            this.updateChart(this.svg)
+        }
+    },
+    created() {
+        const gridHeight = this.height - this.padding;
+        this.obj[&#39;Cosine similarity&#39;][11] = 0.9
+        this.obj[&#39;Cosine similarity&#39;][9] = 0.83
+        this.obj[&#39;Cosine similarity&#39;][10] = 0.88
+        this.obj[&#39;rank&#39;][11] = 4.6
+        this.obj[&#39;rank&#39;][9] = 5.2
+        this.obj[&#39;taylor&#39;][11] = 0.45
+        this.obj[&#39;taylor&#39;][9] = 0.4
+        for (let i in this.obj) {
+            this.scale[i] = d3.scaleLinear()
+                .domain([this.boundary[i][0], this.boundary[i][1]])
+                .range([gridHeight * 0.95, gridHeight * 0.05])
+        }
+        this.lineData = this.getLineData(this.obj);
+        for (let i in this.boundary) {
+            this.threshold[i] = [this.boundary[i][0], this.boundary[i][1]];
+        }
+        // console.log(this.obj);
+    }
+    ,
+    mounted() {
+        const svg = d3.select(&#39;#parallel-coordinate-axis&#39;)
+            .append(&#39;svg&#39;)
+            .attr(&#39;width&#39;, this.width)
+            .attr(&#39;height&#39;, this.height);
+        this.svg = svg;
+        // this.drawGrid(svg);
+        this.drawXAxis(svg);
+        this.drawYAxis(svg);
+        this.drawLines(svg);
+        this.drawTooltip(svg);
+        this.drawThresholdZoom(svg);
+    },
+    methods: {
+        // 整理数据，输出为可以被d3.line使用的数据
+        getLineData(obj) {
+            let lineData = new Array(this.length).fill(0).map((t, i) =&gt; {
+                let line = [];
+                for (let keyIndex in Object.keys(obj)) {
+                    let key = Object.keys(obj)[keyIndex];
+                    line.push([parseInt(keyIndex), obj[key][i]]);
+                }
+                // console.log(&quot;line: &quot;,line);
+                return line;
+            })
+            // console.log(&quot;lineData: &quot;,lineData);
+            return lineData;
+        },
+
+        // 绘制维度名称  0
+        drawXAxis(svg) {
+            const g = svg.append(&#39;g&#39;).attr(&#39;transform&#39;, `translate(${this.padding},0)`);
+            const gridWidth = this.width - this.padding * 2;
+
+            const rectWidth = 40;
+            const rectHeight = 16;
+            g.selectAll(&#39;.x-axis&#39;)
+                .data(Object.keys(this.obj))
+                .enter()
+                .append(&#39;text&#39;)
+                .text(d =&gt; d)
+                .attr(&#39;x&#39;, (d, i) =&gt; gridWidth / 6 + i * gridWidth / 3)
+                .attr(&#39;y&#39;, 12)
+                .attr(&#39;text-anchor&#39;, &#39;middle&#39;)
+                .attr(&#39;font-size&#39;,14)
+                .attr(&#39;fill&#39;,this.axisColor)
+                .attr(&#39;font-weight&#39;,700)
+        },
+
+        // 绘制坐标轴
+        drawYAxis(svg) {
+            const g = svg.append(&#39;g&#39;).attr(&#39;transform&#39;, `translate(${this.padding},${this.padding})`);
+            const gridWidth = this.width - this.padding * 2;
+            const gridHeight = this.height - this.padding * 2;
+
+            const scaleX = x =&gt; gridWidth / 6 + x * gridWidth / 3
+            console.log(this.scale);
+            this.scaleList.forEach((item, i) =&gt; {
+                const axis = d3.axisLeft(this.scale[item])
+                    .ticks((this.boundary[item][1] - this.boundary[item][0]) / this.boundary[item][2] + 1)
+                    // .tickSize(-15)  // 设置刻度线的长度，这里设置为负值以增加线高
+                    // .tickPadding(10);  // 设置刻度与坐标轴的距离
+                // .tickSize(this.boundary)
+
+                g.append(&#39;g&#39;)
+                    .attr(&#39;transform&#39;, `translate(${scaleX(i)})`)     //坐标轴x方向位置
+                    .attr(&#39;stoke&#39;, this.axisColor)
+                    .call(axis)
+                    .selectAll(&#39;text&#39;)
+                    .attr(&#39;fill&#39;, this.axisColor);
+                g.selectAll(&#39;text&#39;)
+                    .attr(&#39;fill&#39;, this.axisColor)
+                g.selectAll(&#39;path&#39;)
+                    .attr(&#39;stroke&#39;, this.axisColor)  // 坐标轴
+                    .attr(&#39;stroke-width&#39;, &#39;2px&#39;)
+                g.selectAll(&#39;line&#39;)
+                    .attr(&#39;stroke&#39;, this.axisColor)   // 刻度宽度
+                    .attr(&#39;stroke-width&#39;, &#39;2px&#39;)
+                g.select(&#39;.domain&#39;)
+                    .attr(&#39;stroke&#39;, this.axisColor)
+                    .attr(&#39;stroke-width&#39;, &#39;2px&#39;);  // 增加坐标轴线高
+            })
+        },
+
+        // 绘制折线
+        drawLines(svg) {
+            const g = svg.append(&#39;g&#39;).attr(&#39;transform&#39;, `translate(${this.padding},${this.padding})`);
+            const gridWidth = this.width - this.padding * 2;
+
+            const scaleX = x =&gt; gridWidth / 6 + x * gridWidth / 3
+
+            const line = d3.line()
+                .x(d =&gt; scaleX(d[0]))
+                .y(d =&gt; this.scale[this.scaleList[d[0]]](d[1]))
+            let index1 = 0;
+            // 画线
+            g.selectAll(&#39;path&#39;)
+                .data(this.lineData)
+                .enter()
+                .append(&#39;path&#39;)
+                .attr(&#39;id&#39;, (d, i) =&gt; `line-${i}`)
+                .attr(&#39;class&#39;, &#39;path-line&#39;)
+                .attr(&#39;d&#39;, d =&gt; line(d))
+                .attr(&#39;fill&#39;, &#39;none&#39;)
+                .attr(&#39;stroke-width&#39;, this.commonLineWidth)
+                .attr(&#39;stroke&#39;, (d, i) =&gt; {
+                    if (this.checkList.length != 0 &amp;&amp; this.highLight[index1] != undefined &amp;&amp; this.highLight[index1] == i) {
+                        index1++;
+                        return this.highLightColor
+                    } else {
+                        return this.commonColor
+                    }
+                });
+
+            const dotData = [];
+            let index2 = 0;
+            this.lineData.forEach((item, i) =&gt; {
+                item.forEach(dot =&gt; dotData.push(dot));
+            });
+            // console.log(dotData,&quot;11111&quot;);
+            let cnt = 0;
+            // 画点
+            // g.selectAll(&#39;circle&#39;)
+            //     .data(dotData)
+            //     .enter()
+            //     .append(&#39;circle&#39;)
+            //     .attr(&#39;class&#39;, (d, i) =&gt; `dot-${parseInt(i / Object.keys(this.obj).length)}`)
+            //     .attr(&#39;r&#39;, &#39;2px&#39;)
+            //     .attr(&#39;cx&#39;, d =&gt; scaleX(d[0]))
+            //     .attr(&#39;cy&#39;, d =&gt; this.scale[this.scaleList[d[0]]](d[1]))
+            //     .attr(&#39;fill&#39;, (d, i) =&gt; {
+            //         if (this.checkList.length != 0 &amp;&amp; this.highLight[index2] != undefined &amp;&amp; this.highLight[index2] == parseInt(i / Object.keys(this.obj).length)) {
+            //             cnt++;
+            //             if (cnt == 3) {
+            //                 cnt = 0;
+            //                 index2++;
+            //             }
+            //             return this.highLightColor
+            //         } else {
+            //             return this.commonColor
+            //         }
+            //     })
+        },
+        // 鼠标放上去显示标签
+        drawTooltip(svg) {
+            const tooltip = d3.select(&#39;#parallel-coordinate-axis&#39;)
+                .append(&#39;div&#39;)
+                .attr(&#39;class&#39;, &#39;tooltip&#39;)
+                .style(&#39;position&#39;, &#39;absolute&#39;)
+                .style(&#39;background-color&#39;, &#39;white&#39;)
+                .style(&#39;border&#39;, &#39;1px solid green&#39;)
+                .style(&#39;border-radius&#39;, &#39;4px&#39;)
+                .style(&#39;padding&#39;, &#39;4px&#39;)
+                .style(&#39;opacity&#39;, &#39;0&#39;);
+
+            let id, line, color;
+            const changeColor = (id, color) =&gt; {
+                d3.select(`#line-${id}`)
+                    .attr(&#39;stroke&#39;, color);
+                d3.selectAll(`.dot-${id}`)
+                    .attr(&#39;fill&#39;, color);
+            }
+            svg.selectAll(&#39;.path-line&#39;)
+                .on(&#39;mouseover&#39;, (d, i) =&gt; {
+                    id = i;
+                    changeColor(id, this.selectedColor);
+                    d3.select(`#line-${id}`)
+                        .attr(&#39;stroke-width&#39;, this.selectedLineWidth)
+                    tooltip.html(function () {
+                        return &#39;id: &#39; + id;
+                    }).style(&quot;left&quot;, (d3.event.offsetX) + &quot;px&quot;)
+                        .style(&quot;top&quot;, (d3.event.offsetY + 10) + &quot;px&quot;)
+                        .style(&#39;opacity&#39;, &#39;0.9&#39;)
+
+                })
+                .on(&#39;mouseout&#39;, (event, d) =&gt; {
+                    if (this.checkList.length != 0 &amp;&amp; this.highLight.indexOf(id) != -1) {
+                        changeColor(id, this.highLightColor)
+                    } else {
+                        changeColor(id, this.commonColor)
+                    }
+                    d3.select(`#line-${id}`)
+                        .attr(&#39;stroke-width&#39;, this.commonLineWidth);
+                    tooltip.style(&#39;opacity&#39;, &#39;0&#39;);
+                })
+        },
+
+        // 绘制筛选区间
+        drawThresholdZoom(svg) {
+            if (svg.select(&#39;.zoom-g&#39;)) svg.select(&#39;.zoom-g&#39;).remove();
+            const g = svg.append(&#39;g&#39;).attr(&#39;class&#39;, &#39;zoom-g&#39;).attr(&#39;transform&#39;, `translate(${this.padding},${this.padding})`);
+            const gridWidth = this.width - this.padding * 2;
+            const scaleX = x =&gt; gridWidth / 6 + x * gridWidth / 3;
+            const rectWidth = 10;
+            g.selectAll(&#39;.zoom&#39;).data(this.checkList)
+                .enter()
+                .append(&#39;rect&#39;)
+                .attr(&#39;x&#39;, d =&gt; scaleX(this.scaleList.indexOf(d)) - rectWidth / 2)
+                .attr(&#39;y&#39;, d =&gt; this.scale[d](this.threshold[d][1]))
+                .attr(&#39;width&#39;, rectWidth)
+                .attr(&#39;height&#39;, d =&gt; this.scale[d](this.threshold[d][0]) - this.scale[d](this.threshold[d][1]))
+                .attr(&#39;fill&#39;, this.highLightColor)
+                .attr(&#39;opacity&#39;, &#39;0.3&#39;)
+        },
+
+        updateChart(svg) {
+            let index1 = 0;
+            svg.selectAll(&#39;.path-line&#39;)
+                .attr(&#39;stroke-width&#39;, this.commonLineWidth)
+                .attr(&#39;stroke&#39;, (d, i) =&gt; {
+                    if (this.checkList.length != 0 &amp;&amp; this.highLight[index1] != undefined &amp;&amp; this.highLight[index1] == i) {
+                        index1++;
+                        return this.highLightColor
+                    } else {
+                        return this.commonColor
+                    }
+                });
+
+            let index2 = 0, cnt = 0;
+            svg.selectAll(&#39;circle&#39;)
+                .attr(&#39;fill&#39;, (d, i) =&gt; {
+                    if (this.checkList.length != 0 &amp;&amp; this.highLight[index2] != undefined &amp;&amp; this.highLight[index2] == parseInt(i / Object.keys(this.obj).length)) {
+                        cnt++;
+                        if (cnt == 3) {
+                            cnt = 0;
+                            index2++;
+                        }
+                        return this.highLightColor
+                    } else {
+                        return this.commonColor
+                    }
+                })
+            this.drawThresholdZoom(svg);
+        }
+
+    }
+}
+
+&lt;/script&gt;
+&lt;template&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;div id=&quot;parallel-coordinate-axis&quot;&gt;
+        &lt;/div&gt;
+        &lt;Popover style=&quot;position: absolute; top: 0; right: 0;opacity:0&quot; placement=&quot;bottom&quot; width=&quot;200&quot; trigger=&quot;hover&quot;&gt;
+            &lt;div slot=&quot;reference&quot; class=&quot;popover-button&quot;&gt;Filter&lt;/div&gt;
+            &lt;div class=&quot;options&quot;&gt;
+                &lt;div class=&quot;option&quot; style=&quot;margin-bottom: 4px;&quot;&gt;
+                    &lt;div class=&quot;option-title&quot;&gt;Filter:&lt;/div&gt;
+                    &lt;div class=&quot;option-content&quot;&gt;
+                        &lt;checkbox-group v-model=&quot;checkList&quot;&gt;
+                            &lt;div&gt;
+                                &lt;checkbox label=&quot;Cosine similarity&quot;&gt;&lt;/checkbox&gt;
+                            &lt;/div&gt;
+                            &lt;div&gt;
+                                &lt;checkbox label=&quot;rank&quot;&gt;&lt;/checkbox&gt;
+                            &lt;/div&gt;
+                            &lt;div&gt;
+                                &lt;checkbox label=&quot;taylor&quot;&gt;&lt;/checkbox&gt;
+                            &lt;/div&gt;
+                        &lt;/checkbox-group&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;option&quot; v-for=&quot;item in checkList&quot; :key=&quot;item&quot;&gt;
+                    &lt;div class=&quot;option-title&quot;&gt;{{ item }}:&lt;/div&gt;
+                    &lt;div class=&quot;option-content&quot;&gt;
+                        &lt;input v-model=&quot;threshold[item][0]&quot; /&gt;
+                        -
+                        &lt;input v-model=&quot;threshold[item][1]&quot; /&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+
+            &lt;/div&gt;
+        &lt;/Popover&gt;
+
+    &lt;/div&gt;
+&lt;/template&gt;
+&lt;style scoped&gt;
+.container {
+    /* width: 320px;
+    height: 150px; */
+    width: 390px;
+    height: 200px;
+    position: relative;
+    margin-left: 20px;
+    margin-top: 50px;
+}
+
+.popover-button {
+    border: 1px solid #08648f;
+    padding: 2px;
+    border-radius: 6px;
+    font-size: 14px;
+    width: 36px;
+}
+
+.tooltip {
+    box-sizing: border-box;
+    width: 100%;
+    border: 1px solid #c2ddfe;
+    background-color: white;
+    border-radius: 6px;
+}
+
+.options {
+    height: 150px;
+    /* width: 2000px; */
+    border-radius: 6px;
+    flex: 1;
+}
+
+.option {
+    display: flex;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.option-title {
+    font-size: 14px;
+    width: 90px;
+    margin-right: 6px;
+    text-align: right;
+}
+
+.option-content input {
+    width: 30px;
+    border-radius: 5px;
+    padding-left: 5px;
+    border: 1px black solid;
+}
+&lt;/style&gt;
+</code></pre>
+<pre><code class="language-js">//改版之后的
+&lt;script&gt;
+import * as d3 from &quot;d3&quot;
+import { Checkbox, CheckboxGroup, Popover } from &#39;element-ui&#39;;
+
+export default {
+    components: {
+        CheckboxGroup,
+        Checkbox,
+        Popover,
+    },
+    data() {
+        return {
+            // width: 320,
+            // height: 150,
+            width: 390,
+            height: 165,
+            padding: 16,    // 预留20边界
+            length: 13,
+            scaleList: [&#39;Cosine similarity&#39;, &#39;rank&#39;, &quot;rank_clone&quot;, &#39;taylor&#39;],
+            obj: {
+                &#39;Cosine similarity&#39;: new Array(20).fill(0).map((item, i) =&gt; 0.8 * Math.random()),
+                &#39;rank&#39;: [6.625485303175038, 3.4806955891952573, 5.732997113104834, 8.426400555471558, 9.086657380302439,
+                 8.802827440435511, 1.3886477532063002, 2.0214819228757652, 6.214379738773397, 5.2, 5.897091631121132, 4.6,
+                  8.938789631200585, 9.984362507129735, 3.2561830062958452, 0.7884999780419255, 9.649223910841956,
+                  4.973150028288025, 3.5944483630369284, 5.598406400626774],
+                &#39;rank_clone&#39;: [6.625485303175038, 3.4806955891952573, 5.732997113104834, 8.426400555471558, 9.086657380302439,
+                 8.802827440435511, 1.3886477532063002, 2.0214819228757652, 6.214379738773397, 5.2, 5.897091631121132, 4.6,
+                  8.938789631200585, 9.984362507129735, 3.2561830062958452, 0.7884999780419255, 9.649223910841956,
+                  4.973150028288025, 3.5944483630369284, 5.598406400626774],
+                // &#39;rank&#39;: new Array(1).fill(0).map((item, i) =&gt; 10 * Math.random() ),
+                &#39;taylor&#39;: new Array(20).fill(0).map((item, i) =&gt; Math.random()),
+            },
+            boundary: {
+                // 三个值分别代表：最小值、最大值、刻度递增值
+                &#39;Cosine similarity&#39;: [0, 1, 0.2],
+                &#39;rank&#39;: [0, 10, 2],
+                &#39;rank_clone&#39;: [0, 10, 2],
+                &#39;taylor&#39;: [0, 1, 0.2],
+            },
+            // 三个比例尺，在getPre里算出
+            scale: {},
+            threshold: {
+                &#39;Cosine similarity&#39;: [],
+                &#39;rank&#39;: [],
+                &#39;rank_clone&#39;: [],
+                &#39;taylor&#39;: [],
+            },
+            lineData: [],
+            commonColor: &#39;#2623D9&#39;, // 常规颜色
+            highLightColor: &#39;#fba49f&#39;, // 筛选高亮颜色
+            selectedColor: &#39;#83bcfb&#39;, // 选中颜色
+            commonLineWidth: &#39;1.5px&#39;, // 常规线宽
+            selectedLineWidth: &#39;3px&#39;, // 选中线宽
+            axisColor: &#39;#326992&#39;, // 坐标轴颜色
+            checkList: [],
+            svg: undefined
+        }
+    },
+    computed: {
+
+        // 高亮数据
+        highLight: function () {
+            let res = []
+            // 如果筛选条件为空
+            if (this.checkList.length == 0)
+                res = [];
+            else {
+                let l = [];
+                // 遍历线条数据，筛选符合条件的线id
+                this.lineData.forEach((item, i) =&gt; {
+                    let flag = true;
+                    // 遍历筛选条件
+                    this.checkList.forEach(t =&gt; {
+                        let index = this.scaleList.indexOf(t)
+                        let value = item[index][1]
+                        if (flag &amp;&amp; (value &lt; this.threshold[t][0] || value &gt; this.threshold[t][1]))
+                            flag = false;
+                    })
+                    if (flag) l.push(i);
+                })
+                res = l;
+            }
+            return res;
+        }
+    },
+    watch: {
+        highLight: function () {
+            this.updateChart(this.svg)
+        },
+        checkList: function () {
+            this.updateChart(this.svg)
+        }
+    },
+    created() {
+        const gridHeight = this.height - this.padding;
+        this.obj[&#39;Cosine similarity&#39;][11] = 0.9
+        this.obj[&#39;Cosine similarity&#39;][9] = 0.83
+        this.obj[&#39;Cosine similarity&#39;][10] = 0.88
+        this.obj[&#39;rank&#39;][11] = 4.6
+        this.obj[&#39;rank&#39;][9] = 5.2
+        this.obj[&#39;rank_clone&#39;][11] = 4.6
+        this.obj[&#39;rank_clone&#39;][9] = 5.2
+        this.obj[&#39;taylor&#39;][11] = 0.45
+        this.obj[&#39;taylor&#39;][9] = 0.4
+        for (let i in this.obj) {
+            this.scale[i] = d3.scaleLinear()
+                .domain([this.boundary[i][0], this.boundary[i][1]])
+                .range([gridHeight * 0.95, gridHeight * 0.05])
+        }
+        this.lineData = this.getLineData(this.obj);
+        for (let i in this.boundary) {
+            this.threshold[i] = [this.boundary[i][0], this.boundary[i][1]];
+        }
+        // console.log(this.obj);
+    }
+    ,
+    mounted() {
+        const svg = d3.select(&#39;#parallel-coordinate-axis&#39;)
+            .append(&#39;svg&#39;)
+            .attr(&#39;width&#39;, this.width)
+            .attr(&#39;height&#39;, this.height);
+        this.svg = svg;
+        // this.drawGrid(svg);
+        this.drawXAxis(svg);
+        this.drawYAxis(svg);
+        this.drawLines(svg);
+        this.drawTooltip(svg);
+        this.drawThresholdZoom(svg);
+    },
+    methods: {
+        // 整理数据，输出为可以被d3.line使用的数据
+        getLineData(obj) {
+            let lineData = new Array(this.length).fill(0).map((t, i) =&gt; {
+                let line = [];
+                for (let keyIndex in Object.keys(obj)) {
+                    let key = Object.keys(obj)[keyIndex];
+                    line.push([parseInt(keyIndex), obj[key][i]]);
+                }
+                // console.log(&quot;line: &quot;,line);
+                return line;
+            })
+            // console.log(&quot;lineData: &quot;,lineData);
+            return lineData;
+        },
+
+        // 绘制维度名称  0
+        drawXAxis(svg) {
+            const g = svg.append(&#39;g&#39;).attr(&#39;transform&#39;, `translate(${this.padding},0)`);
+            const gridWidth = this.width - this.padding * 2;
+            // console.log(&quot;gridWidth: &quot;,gridWidth);
+            // console.log(&quot;Object.keys(this.obj): &quot;,Object.keys(this.obj));
+            const rectWidth = 40;
+            const rectHeight = 16;
+            g.selectAll(&#39;.x-axis&#39;)
+                .data(Object.keys(this.obj))
+                .enter()
+                .append(&#39;text&#39;)
+                .text(d =&gt; d)
+                // .attr(&#39;x&#39;, (d, i) =&gt; gridWidth / 6 + i * gridWidth / 3)
+                .attr(&#39;x&#39;, (d, i) =&gt; {
+                  if(i == 0){
+                    return gridWidth / 6 + i * gridWidth / 3 - 1000
+                  }else if(i == 1){
+                    return gridWidth / 6 + i * gridWidth / 3 - 1000
+                  }else if(i == 2){
+                    return gridWidth / 6 + i * gridWidth / 3 - 1500
+                  }else{
+                    return gridWidth / 6 + 2 * gridWidth / 3 - 2000
+                  }
+                })
+                .attr(&#39;y&#39;, 12)
+                .attr(&#39;text-anchor&#39;, &#39;middle&#39;)
+                .attr(&#39;font-size&#39;,14)
+                .attr(&#39;fill&#39;,this.axisColor)
+                .attr(&#39;font-weight&#39;,700)
+        },
+
+        // 绘制坐标轴
+        drawYAxis(svg) {
+            const g = svg.append(&#39;g&#39;).attr(&#39;transform&#39;, `translate(${this.padding},${this.padding})`);
+            const gridWidth = this.width - this.padding * 2;
+            const gridHeight = this.height - this.padding * 2;
+
+            // const scaleX = x =&gt; gridWidth / 6 + x * gridWidth / 3
+            const scaleX = (i) =&gt; {
+              if(i == 0){
+                return gridWidth / 5 + i * gridWidth / 4 + 10   //81.6
+              }else if(i == 1){
+                return gridWidth / 5 + i * gridWidth / 4 - 10   //151.1
+              }else if(i == 2){
+                return gridWidth / 5 + i * gridWidth / 4 - 70   //180.6
+              }else{
+                return gridWidth / 5 + i * gridWidth / 4 - 90   //250.1
+              }
+            }
+            // console.log(&quot;this.scale: &quot;,this.scale.taylor);
+            this.scaleList.forEach((item, i) =&gt; {
+              // console.log(&quot;this.scale: &quot;,this.scale[item]);
+                const axis = d3.axisLeft(this.scale[item])
+                    .ticks((this.boundary[item][1] - this.boundary[item][0]) / this.boundary[item][2] + 1)
+                    // .tickSize(-15)  // 设置刻度线的长度，这里设置为负值以增加线高
+                    // .tickPadding(10);  // 设置刻度与坐标轴的距离
+                // .tickSize(this.boundary)
+
+                g.append(&#39;g&#39;)
+                    .attr(&#39;transform&#39;, `translate(${scaleX(i) + 0})`)     //坐标轴x方向位置
+                    .attr(&#39;stoke&#39;, this.axisColor)
+                    .call(axis)
+                    .selectAll(&#39;text&#39;)
+                    .attr(&#39;fill&#39;, this.axisColor)
+                    .style(&quot;display&quot;, &quot;none&quot;);
+                g.selectAll(&#39;text&#39;)
+                    .attr(&#39;fill&#39;, this.axisColor)
+                g.selectAll(&#39;path&#39;)
+                    .attr(&#39;stroke&#39;, this.axisColor)  // 坐标轴
+                    .attr(&#39;stroke-width&#39;, &#39;2px&#39;)
+                g.selectAll(&#39;line&#39;)
+                    .attr(&#39;stroke&#39;, this.axisColor)   // 刻度宽度
+                    .attr(&#39;stroke-width&#39;, &#39;0px&#39;)
+                g.select(&#39;.domain&#39;)
+                    .attr(&#39;stroke&#39;, this.axisColor)
+                    .attr(&#39;stroke-width&#39;, &#39;2px&#39;);  // 增加坐标轴线高
+                g.selectAll(&#39;.domain&#39;)              //隐藏坐标轴
+                    .style(&quot;display&quot;, &quot;none&quot;)
+            })
+        },
+
+        // 绘制折线
+        drawLines(svg) {
+            const g = svg.append(&#39;g&#39;).attr(&#39;transform&#39;, `translate(${this.padding},${this.padding})`);
+            const gridWidth = this.width - this.padding * 2;
+
+            // const scaleX = x =&gt; gridWidth / 6 + x * gridWidth / 3
+            const scaleX = (i) =&gt; {
+              if(i == 0){
+                return gridWidth / 5 + i * gridWidth / 4 + 10   //81.6
+              }else if(i == 1){
+                return gridWidth / 5 + i * gridWidth / 4 - 10   //151.1
+              }else if(i == 2){
+                return gridWidth / 5 + i * gridWidth / 4 - 70   //180.6
+              }else{
+                return gridWidth / 5 + i * gridWidth / 4 - 90   //250.1
+              }
+            }
+
+            const line = d3.line()
+                .x(d =&gt; scaleX(d[0]))
+                .y(d =&gt; this.scale[this.scaleList[d[0]]](d[1]))
+            let index1 = 0;
+            // 画线
+            g.selectAll(&#39;path&#39;)
+                .data(this.lineData)
+                .enter()
+                .append(&#39;path&#39;)
+                .attr(&#39;id&#39;, (d, i) =&gt; `line-${i}`)
+                .attr(&#39;class&#39;, &#39;path-line&#39;)
+                .attr(&#39;d&#39;, d =&gt; line(d))
+                .attr(&#39;fill&#39;, &#39;none&#39;)
+                // .attr(&#39;stroke&#39;, &quot;#f5f656&quot;)
+                .attr(&#39;stroke-width&#39;, this.commonLineWidth)
+                .attr(&#39;stroke&#39;, (d, i) =&gt; {
+                    if (this.checkList.length != 0 &amp;&amp; this.highLight[index1] != undefined &amp;&amp; this.highLight[index1] == i) {
+                        index1++;
+                        return this.highLightColor
+                    } else {
+                        return this.commonColor
+                    }
+                });
+
+            const dotData = [];
+            let index2 = 0;
+            this.lineData.forEach((item, i) =&gt; {
+                item.forEach(dot =&gt; dotData.push(dot));
+            });
+            // console.log(dotData,&quot;11111&quot;);
+            let cnt = 0;
+        },
+        // 鼠标放上去显示标签
+        drawTooltip(svg) {
+            const tooltip = d3.select(&#39;#parallel-coordinate-axis&#39;)
+                .append(&#39;div&#39;)
+                .attr(&#39;class&#39;, &#39;tooltip&#39;)
+                .style(&#39;position&#39;, &#39;absolute&#39;)
+                .style(&#39;background-color&#39;, &#39;white&#39;)
+                .style(&#39;border&#39;, &#39;1px solid green&#39;)
+                .style(&#39;border-radius&#39;, &#39;4px&#39;)
+                .style(&#39;padding&#39;, &#39;4px&#39;)
+                .style(&#39;opacity&#39;, &#39;0&#39;);
+
+            let id, line, color;
+            const changeColor = (id, color) =&gt; {
+                d3.select(`#line-${id}`)
+                    .attr(&#39;stroke&#39;, color);
+                d3.selectAll(`.dot-${id}`)
+                    .attr(&#39;fill&#39;, color);
+            }
+            svg.selectAll(&#39;.path-line&#39;)
+                .on(&#39;mouseover&#39;, (d, i) =&gt; {
+                    id = i;
+                    changeColor(id, this.selectedColor);
+                    d3.select(`#line-${id}`)
+                        .attr(&#39;stroke-width&#39;, this.selectedLineWidth)
+                    tooltip.html(function () {
+                        return &#39;id: &#39; + id;
+                    }).style(&quot;left&quot;, (d3.event.offsetX) + &quot;px&quot;)
+                        .style(&quot;top&quot;, (d3.event.offsetY + 10) + &quot;px&quot;)
+                        .style(&#39;opacity&#39;, &#39;0.9&#39;)
+
+                })
+                .on(&#39;mouseout&#39;, (event, d) =&gt; {
+                    if (this.checkList.length != 0 &amp;&amp; this.highLight.indexOf(id) != -1) {
+                        changeColor(id, this.highLightColor)
+                    } else {
+                        changeColor(id, this.commonColor)
+                    }
+                    d3.select(`#line-${id}`)
+                        .attr(&#39;stroke-width&#39;, this.commonLineWidth);
+                    tooltip.style(&#39;opacity&#39;, &#39;0&#39;);
+                })
+        },
+
+        // 绘制筛选区间
+        drawThresholdZoom(svg) {
+            if (svg.select(&#39;.zoom-g&#39;)) svg.select(&#39;.zoom-g&#39;).remove();
+            const g = svg.append(&#39;g&#39;).attr(&#39;class&#39;, &#39;zoom-g&#39;).attr(&#39;transform&#39;, `translate(${this.padding},${this.padding})`);
+            const gridWidth = this.width - this.padding * 2;
+            const scaleX = x =&gt; gridWidth / 6 + x * gridWidth / 3;
+            const rectWidth = 10;
+            g.selectAll(&#39;.zoom&#39;).data(this.checkList)
+                .enter()
+                .append(&#39;rect&#39;)
+                .attr(&#39;x&#39;, d =&gt; scaleX(this.scaleList.indexOf(d)) - rectWidth / 2)
+                .attr(&#39;y&#39;, d =&gt; this.scale[d](this.threshold[d][1]))
+                .attr(&#39;width&#39;, rectWidth)
+                .attr(&#39;height&#39;, d =&gt; this.scale[d](this.threshold[d][0]) - this.scale[d](this.threshold[d][1]))
+                .attr(&#39;fill&#39;, this.highLightColor)
+                .attr(&#39;opacity&#39;, &#39;0.3&#39;)
+        },
+
+        updateChart(svg) {
+            let index1 = 0;
+            svg.selectAll(&#39;.path-line&#39;)
+                .attr(&#39;stroke-width&#39;, this.commonLineWidth)
+                .attr(&#39;stroke&#39;, (d, i) =&gt; {
+                    if (this.checkList.length != 0 &amp;&amp; this.highLight[index1] != undefined &amp;&amp; this.highLight[index1] == i) {
+                        index1++;
+                        return this.highLightColor
+                    } else {
+                        return this.commonColor
+                    }
+                });
+
+            let index2 = 0, cnt = 0;
+            svg.selectAll(&#39;circle&#39;)
+                .attr(&#39;fill&#39;, (d, i) =&gt; {
+                    if (this.checkList.length != 0 &amp;&amp; this.highLight[index2] != undefined &amp;&amp; this.highLight[index2] == parseInt(i / Object.keys(this.obj).length)) {
+                        cnt++;
+                        if (cnt == 3) {
+                            cnt = 0;
+                            index2++;
+                        }
+                        return this.highLightColor
+                    } else {
+                        return this.commonColor
+                    }
+                })
+            this.drawThresholdZoom(svg);
+        }
+
+    }
+}
+
+&lt;/script&gt;
+&lt;template&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;div id=&quot;parallel-coordinate-axis&quot;&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;featuremap_title cs&quot;&gt;Cosine similarity&lt;/div&gt;
+        &lt;div class=&quot;featuremap_title rank&quot;&gt;Rank&lt;/div&gt;
+        &lt;div class=&quot;featuremap_title taylor&quot;&gt;Taylor&lt;/div&gt;
+        &lt;div class=&quot;zbz_zuo1&quot;&gt;&lt;/div&gt;
+        &lt;div class=&quot;zbz_zhongjian1&quot;&gt;&lt;/div&gt;
+        &lt;div class=&quot;zbz_you1&quot;&gt;&lt;/div&gt;
+        &lt;Popover style=&quot;position: absolute; top: 0; right: 0;opacity:0&quot; placement=&quot;bottom&quot; width=&quot;200&quot; trigger=&quot;hover&quot;&gt;
+            &lt;div slot=&quot;reference&quot; class=&quot;popover-button&quot;&gt;Filter&lt;/div&gt;
+            &lt;div class=&quot;options&quot;&gt;
+                &lt;div class=&quot;option&quot; style=&quot;margin-bottom: 4px;&quot;&gt;
+                    &lt;div class=&quot;option-title&quot;&gt;Filter:&lt;/div&gt;
+                    &lt;div class=&quot;option-content&quot;&gt;
+                        &lt;checkbox-group v-model=&quot;checkList&quot;&gt;
+                            &lt;div&gt;
+                                &lt;checkbox label=&quot;Cosine similarity&quot;&gt;&lt;/checkbox&gt;
+                            &lt;/div&gt;
+                            &lt;div&gt;
+                                &lt;checkbox label=&quot;rank&quot;&gt;&lt;/checkbox&gt;
+                            &lt;/div&gt;
+                            &lt;div&gt;
+                                &lt;checkbox label=&quot;taylor&quot;&gt;&lt;/checkbox&gt;
+                            &lt;/div&gt;
+                        &lt;/checkbox-group&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;option&quot; v-for=&quot;item in checkList&quot; :key=&quot;item&quot;&gt;
+                    &lt;div class=&quot;option-title&quot;&gt;{{ item }}:&lt;/div&gt;
+                    &lt;div class=&quot;option-content&quot;&gt;
+                        &lt;input v-model=&quot;threshold[item][0]&quot; /&gt;
+                        -
+                        &lt;input v-model=&quot;threshold[item][1]&quot; /&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+
+            &lt;/div&gt;
+        &lt;/Popover&gt;
+
+    &lt;/div&gt;
+&lt;/template&gt;
+&lt;style scoped&gt;
+.container {
+    /* width: 320px;
+    height: 150px; */
+    width: 390px;
+    height: 200px;
+    position: relative;
+    margin-left: 20px;
+    margin-top: 50px;
+    .featuremap_title{
+      position: absolute;
+      background-color: #35A4FB;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1px;
+      /* font-weight: 50; */
+      color: #ffffff;
+    }
+    .cs{
+      width: 100px;
+      height: 31px;
+      left: 0px;
+      top: -15px;
+      border-top-left-radius: 11px;
+      border-top-right-radius: 8px;
+      border-bottom-left-radius: 11px;
+      /* border-bottom-right-radius: 5px; */
+    }
+    .rank{
+      width: 70px;
+      height: 31px;
+      left: 166px;
+      top: -15px;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 11px;
+      border-bottom-left-radius: 0px;
+      border-bottom-right-radius: 11px;
+    }
+    .taylor{
+      width: 70px;
+      height: 31px;
+      left: 266px;
+      top: -15px;
+      border-top-left-radius: 11px;
+      border-top-right-radius: 11px;
+      border-bottom-left-radius: 0px;
+      border-bottom-right-radius: 11px;
+    }
+    .zbz_zuo1{
+      width: 20.9px;
+      height: 104px;
+      position: absolute;
+      top: 42px;
+      left: 73px;
+      background: url(&quot;../../../assets/img/坐标轴_左.png&quot;);
+      background-size: cover;
+      transform: scale(1.5,1.5);
+    }
+    .zbz_zhongjian1{
+      width: 20.9px;
+      height: 104px;
+      position: absolute;
+      top: 42px;
+      left: 172px;
+      background: url(&quot;../../../assets/img/坐标轴_中间.png&quot;);
+      background-size: cover;
+      transform: scale(1.5,1.5);
+    }
+    .zbz_you1{
+      width: 20.9px;
+      height: 104px;
+      position: absolute;
+      top: 42px;
+      left: 270px;
+      background: url(&quot;../../../assets/img/坐标轴_右.png&quot;);
+      background-size: cover;
+      transform: scale(1.5,1.5);
+    }
+}
+
+.popover-button {
+    border: 1px solid #08648f;
+    padding: 2px;
+    border-radius: 6px;
+    font-size: 14px;
+    width: 36px;
+}
+
+.tooltip {
+    box-sizing: border-box;
+    width: 100%;
+    border: 1px solid #c2ddfe;
+    background-color: white;
+    border-radius: 6px;
+}
+
+.options {
+    height: 150px;
+    /* width: 2000px; */
+    border-radius: 6px;
+    flex: 1;
+}
+
+.option {
+    display: flex;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.option-title {
+    font-size: 14px;
+    width: 90px;
+    margin-right: 6px;
+    text-align: right;
+}
+
+.option-content input {
+    width: 30px;
+    border-radius: 5px;
+    padding-left: 5px;
+    border: 1px black solid;
+}
+&lt;/style&gt;
+</code></pre>
+
+</body>
+</html>

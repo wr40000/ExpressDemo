@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="http://139.159.253.241:3000/stylesheets/github.css">
+    <title>Document</title>
+</head>
+<body>
+    <h1>D3</h1>
+<p><img src="D3js.assets/image-20230424221232168.png" alt="image-20230424221232168"></p>
+<p><img src="D3js.assets/image-20230424221259242.png" alt="image-20230424221259242"></p>
+<h2>d3.nest</h2>
+<pre><code>http://t.csdn.cn/SAWnO
+</code></pre>
+<p>d3.nest可以分组数据</p>
+<p>在进行数据分析时Grouping data是一个很重要的能力 .通常，我们需要将数据按照某个类别进行打散，并查找和统计每个组的具体细节。</p>
+<p>D3 包括强大的d3.nest 功能，可以通过极小量的代码构造分组。</p>
+<p><strong>Nest 基础</strong></p>
+<p>用户来决定这个<a href="https://so.csdn.net/so/search?q=%E5%B5%8C%E5%A5%97&spm=1001.2101.3001.7020">嵌套</a>多少层。
+跟很多GROUP_BY概念有点不同，其中只允许有嵌套一个级别。</p>
+<p>例如，我们有如下的 CSV 格式文件 “expenses”:</p>
+<pre><code>name,amount,date
+jim,34.0,11/12/2015
+carl,120.11,11/12/2015
+jim,45.0,12/01/2015
+stacy,12.00,01/04/2016
+stacy,34.10,01/04/2016
+stacy,44.80,01/05/2016
+</code></pre>
+<p>转换为对象数组:</p>
+<pre><code>var expenses = [{&quot;name&quot;:&quot;jim&quot;,&quot;amount&quot;:34,&quot;date&quot;:&quot;11/12/2015&quot;},
+  {&quot;name&quot;:&quot;carl&quot;,&quot;amount&quot;:120.11,&quot;date&quot;:&quot;11/12/2015&quot;},
+  {&quot;name&quot;:&quot;jim&quot;,&quot;amount&quot;:45,&quot;date&quot;:&quot;12/01/2015&quot;},
+  {&quot;name&quot;:&quot;stacy&quot;,&quot;amount&quot;:12.00,&quot;date&quot;:&quot;01/04/2016&quot;},
+  {&quot;name&quot;:&quot;stacy&quot;,&quot;amount&quot;:34.10,&quot;date&quot;:&quot;01/04/2016&quot;},
+  {&quot;name&quot;:&quot;stacy&quot;,&quot;amount&quot;:44.80,&quot;date&quot;:&quot;01/05/2016&quot;}
+];
+</code></pre>
+<p>然后，由我们决定以什么样的方式将这些数据切片
+我们首先以Name</p>
+<pre><code>var expensesByName = d3.nest()
+  .key(function(d) { return d.name; })
+  .entries(expenses);
+</code></pre>
+<p>用的D3.js</p>
+<p>结果为：</p>
+<pre><code>expensesByName = [
+  {&quot;key&quot;:&quot;jim&quot;,&quot;values&quot;:[
+    {&quot;name&quot;:&quot;jim&quot;,&quot;amount&quot;:34,&quot;date&quot;:&quot;11/12/2015&quot;},
+    {&quot;name&quot;:&quot;jim&quot;,&quot;amount&quot;:45,&quot;date&quot;:&quot;12/01/2015&quot;}
+  ]},
+  {&quot;key&quot;:&quot;carl&quot;,&quot;values&quot;:[
+    {&quot;name&quot;:&quot;carl&quot;,&quot;amount&quot;:120.11,&quot;date&quot;:&quot;11/12/2015&quot;}
+  ]},
+  {&quot;key&quot;:&quot;stacy&quot;,&quot;values&quot;:[
+    {&quot;name&quot;:&quot;stacy&quot;,&quot;amount&quot;:12.00,&quot;date&quot;:&quot;01/04/2016&quot;},
+    {&quot;name&quot;:&quot;stacy&quot;,&quot;amount&quot;:34.10,&quot;date&quot;:&quot;01/04/2016&quot;},
+    {&quot;name&quot;:&quot;stacy&quot;,&quot;amount&quot;:44.80,&quot;date&quot;:&quot;01/05/2016&quot;}
+  ]}
+];
+</code></pre>
+<p>expensesByName 为一个对象数组. 用key function来组成value，每个对象都有一个key属性和value属性
+这些entries的values属性是一个数组，是所有的原始数据对象。</p>
+<p><strong>概述Groups</strong></p>
+<p>嵌套的结构非常有利于可视化数据，特别是分析应用。</p>
+<p>d3.rollup , 提供一个功能来获取每个组的values，并产生新的数值。这使得group功能非常灵活。</p>
+<p>如下面的例子获取每个name的总数：</p>
+<pre><code>var expensesCount = d3.nest()
+  .key(function(d) { return d.name; })
+  .rollup(function(v) { return v.length; })
+  .entries(expenses);
+console.log(JSON.stringify(expensesCount));
+</code></pre>
+<pre><code>=&gt; [{&quot;key&quot;:&quot;jim&quot;,&quot;values&quot;:2},{&quot;key&quot;:&quot;carl&quot;,&quot;values&quot;:1},{&quot;key&quot;:&quot;stacy&quot;,&quot;values&quot;:3}]
+</code></pre>
+<p>用来的values值由rollup函数产生的值所所代替。 而name不变。</p>
+<p>另外一个例子获取每个人的平均金额:</p>
+<pre><code>var expensesAvgAmount = d3.nest()
+  .key(function(d) { return d.name; })
+  .rollup(function(v) { return d3.mean(v, function(d) { return d.amount; }); })
+  .entries(expenses);
+console.log(JSON.stringify(expensesAvgAmount));
+</code></pre>
+<pre><code>=&gt; [{&quot;key&quot;:&quot;jim&quot;,&quot;values&quot;:39.5},{&quot;key&quot;:&quot;carl&quot;,&quot;values&quot;:120.11},{&quot;key&quot;:&quot;stacy&quot;,&quot;values&quot;:30.3}]
+</code></pre>
+<p>很棒吧？rollup中还可以使用多个操作：</p>
+<pre><code>var expenseMetrics = d3.nest()
+  .key(function(d) { return d.name; })
+  .rollup(function(v) { return {
+    count: v.length,
+    total: d3.sum(v, function(d) { return d.amount; }),
+    avg: d3.mean(v, function(d) { return d.amount; })
+  }; })
+  .entries(expenses);
+console.log(JSON.stringify(expenseMetrics));
+</code></pre>
+<pre><code>=&gt; [{&quot;key&quot;:&quot;jim&quot;,&quot;values&quot;:{&quot;count&quot;:2,&quot;total&quot;:79,&quot;avg&quot;:39.5}},
+ {&quot;key&quot;:&quot;carl&quot;,&quot;values&quot;:{&quot;count&quot;:1,&quot;total&quot;:120.11,&quot;avg&quot;:120.11}},
+ {&quot;key&quot;:&quot;stacy&quot;,&quot;values&quot;:{&quot;count&quot;:3,&quot;total&quot;:90.9,&quot;avg&quot;:30.3}}]
+</code></pre>
+<p><strong>输出Map</strong></p>
+<p>数组可以输出为Map的数据结果，或者使用forEach来处理迭代和合计任务。d3.nest可以返回一个对象（或者map），如下：</p>
+<pre><code>var expensesTotal = d3.nest()
+  .key(function(d) { return d.name; })
+  .rollup(function(v) { return d3.sum(v, function(d) { return d.amount; }); })
+  .map(expenses);
+console.log(JSON.stringify(expensesTotal));
+</code></pre>
+<pre><code>=&gt; {&quot;jim&quot;:79,&quot;carl&quot;:120.11,&quot;stacy&quot;:90.9}
+</code></pre>
+<p><strong>多级嵌套</strong></p>
+<p>nest还可以多级嵌套</p>
+<p>可以进一步key操作，如下，每个人的花费总计，以及日期:</p>
+<pre><code>var expensesTotalByDay = d3.nest()
+  .key(function(d) { return d.name; })
+  .key(function(d) { return d.date; })
+  .rollup(function(v) { return d3.sum(v, function(d) { return d.amount; }); })
+  .map(expenses);
+console.log(JSON.stringify(expensesTotalByDay));
+</code></pre>
+<pre><code>=&gt; {&quot;jim&quot;:{&quot;11/12/2015&quot;:34,&quot;12/01/2015&quot;:45},
+ &quot;carl&quot;:{&quot;11/12/2015&quot;:120.11},
+ &quot;stacy&quot;:{&quot;01/04/2016&quot;:46.1,&quot;01/05/2016&quot;:44.8}}
+</code></pre>
+<p>rollup是应用在子分组中。
+nest.key的先后顺序决定了分组的方式. 如果交换name和date:</p>
+<pre><code>var expensesTotalByDay = d3.nest()
+  .key(function(d) { return d.date; })
+  .key(function(d) { return d.name; })
+  .rollup(function(v) { return d3.sum(v, function(d) { return d.amount; }); })
+  .map(expenses);
+console.log(JSON.stringify(expensesTotalByDay));
+</code></pre>
+<pre><code>=&gt; {&quot;11/12/2015&quot;:{&quot;jim&quot;:34,&quot;carl&quot;:120.11},
+ &quot;12/01/2015&quot;:{&quot;jim&quot;:45},
+ &quot;01/04/2016&quot;:{&quot;stacy&quot;:46.1},
+ &quot;01/05/2016&quot;:{&quot;stacy&quot;:44.8}}
+</code></pre>
+<p><strong>衍生 Key Values</strong></p>
+<p>我们可以自己指定keyvalue，例如，我们想知道每年的总数，我们可以仅仅操作date，来获取年号:</p>
+<pre><code>var expensesByYear = d3.nest()
+  .key(function(d) { return d.date.split(&quot;/&quot;)[2]; })
+  .rollup(function(v) { return d3.sum(v, function(d) { return d.amount; }); })
+  .map(expenses);
+console.log(JSON.stringify(expensesByYear));
+</code></pre>
+<pre><code>=&gt; {&quot;2015&quot;:199.11,&quot;2016&quot;:90.9}
+</code></pre>
+<h2>D3-颜色</h2>
+<h2>差值</h2>
+<ol>
+<li><code>d3.curveLinear</code>: 线性插值，曲线是直线段的组合。</li>
+<li><code>d3.curveStep</code>: 阶梯插值，曲线由水平和垂直线段组成。</li>
+<li><code>d3.curveBasis</code>: 基本插值，创建平滑的曲线。</li>
+<li><code>d3.curveBundle</code>: 捆绑插值，用于连接多个线段。</li>
+<li><code>d3.curveCardinalClosed</code>: 封闭的基本插值，与 <code>d3.curveCardinal</code> 类似，但曲线首尾相连。</li>
+<li><code>d3.curveCatmullRom</code>: Catmull-Rom插值，创建平滑的曲线。</li>
+<li><code>d3.curveMonotoneX</code> 和 <code>d3.curveMonotoneY</code>: 用于绘制单调递增的曲线。</li>
+</ol>
+<pre><code class="language-js">var line = d3.line()
+    .x(function(d, i) { return xScale(i); })
+    .y(function(d) { return yScale(d); })
+    .curve(d3.curveLinear);
+</code></pre>
+
+</body>
+</html>
