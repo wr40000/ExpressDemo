@@ -52,7 +52,7 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-app.listen(3000, ()=>{
+app.listen(6868, ()=>{
   console.log("3000端口监听中...");
 })
 
