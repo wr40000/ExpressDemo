@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        :root {
+            font-size: 15px;
+            --lighting-size: 300px;
+            --lighting-color: #9333ea;
+            --lighting-highlight-color: #d8b4fe;
+            --offset: 6px;
+        }
+
+        body {
+            --x: 0px;
+            --y: 0px;
+
+            /* max-width: 600px; */
+            margin: 10px auto;
+
+            font-size: 1.5rem;
+            font-family: Helvetica;
+            background-color: #020617;
+            color: #94a3b8;
+            position: relative;
+        }
+
+        a {
+            text-decoration: none;
+            color: #9333ea;
+            display: inline-block;
+
+            background-image: radial-gradient(var(--lighting-highlight-color), var(--lighting-color), var(--lighting-color));
+            background-size: var(--lighting-size) var(--lighting-size);
+            background-repeat: no-repeat;
+
+            background-position-x: calc(var(--x) - var(--positionX) - calc(var(--lighting-size) / 2));
+            background-position-y: calc(var(--y) - var(--positionY) - calc(var(--lighting-size) / 2));
+
+            background-color: var(--lighting-color);
+
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+
+        .noteList {
+            padding: 90px 0 0 40px;
+        }
+
+        h2 {
+            width: 980px;
+            height: 315px;
+            font-size: 95px;
+            font-family: Helvetica;
+            line-height: 1.06;
+            letter-spacing: -0.02em;
+            color: #ffffff;
+            position: absolute;
+            overflow: hidden;
+            top: -10%;
+            right: -20%;
+            transform: scale(0.5);
+        }
+
+        .mask {
+            height: 106px;
+            position: relative;
+            overflow: hidden;
+            margin-top: var(--offset);
+        }
+
+        .mask span {
+            display: block;
+            box-sizing: border-box;
+            position: absolute;
+            top: 106px;
+            padding-bottom: var(--offset);
+
+            background-size: 100% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-repeat: no-repeat;
+        }
+
+        .mask span[data-show] {
+            transform: translateY(-100%);
+            transition: .5s transform ease-in-out;
+        }
+
+        .mask span[data-up] {
+            transform: translateY(-200%);
+            transition: .5s transform ease-in-out;
+        }
+
+        .mask span:nth-child(1) {
+            background-image: linear-gradient(45deg, #0ecffe 50%, #07a6f1);
+        }
+
+        .mask span:nth-child(2) {
+            background-image: linear-gradient(45deg, #18e198 50%, #0ec15d);
+        }
+
+        .mask span:nth-child(3) {
+            background-image: linear-gradient(45deg, #8a7cfb 50%, #633e9c);
+        }
+
+        .mask span:nth-child(4) {
+            background-image: linear-gradient(45deg, #fa7671 50%, #f45f7f);
+        }
+        .mask span:nth-child(5) {
+            background-image: linear-gradient(45deg, #0ecffe 50%, #07a6f1);
+        }
+
+        .mask span:nth-child(6) {
+            background-image: linear-gradient(45deg, #18e198 50%, #0ec15d);
+        }
+
+        .mask span:nth-child(7) {
+            background-image: linear-gradient(45deg, #8a7cfb 50%, #633e9c);
+        }
+
+        .mask span:nth-child(8) {
+            background-image: linear-gradient(45deg, #fa7671 50%, #f45f7f);
+        }
+        .mask span:nth-child(9) {
+            background-image: linear-gradient(45deg, #8a7cfb 50%, #633e9c);
+        }
+
+        .mask span:nth-child(10) {
+            background-image: linear-gradient(45deg, #fa7671 50%, #f45f7f);
+        }
+
+        /* h1 */
+        h1 {
+            color: white;
+            font-family: Helvetica;
+            font-size: 50px;
+            letter-spacing: -4px;
+            position: relative;
+            color: transparent;
+            background-image: linear-gradient(to right, white, white, transparent);
+            background-size: 200% 100%;
+            background-repeat: no-repeat;
+            background-clip: text;
+            background-position-x: 200%;
+            animation: 2s fillup ease-in-out 2s forwards;
+        }
+
+        h1::after {
+            content: '笔记';
+            position: absolute;
+            top: 0;
+            left: 40px;
+            -webkit-text-stroke: 2px;
+            -webkit-text-stroke-color: #9333ea;
+            -webkit-text-fill-color: transparent;
+            opacity: 0;
+            animation: 2s fadein ease-in-out forwards;
+        }
+
+        @keyframes fillup {
+            from {
+                background-position-x: 200%;
+            }
+
+            to {
+                background-position-x: 0%;
+            }
+        }
+
+        @keyframes fadein {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1 class="menu"></h1>
+    <h2>
+        好好学习，天天向上。
+        <div class="mask">
+            <span data-show>自信人生二百年，</span>
+            <span>会当水击三千里！</span>
+            <span>雄关漫道真如铁，</span>
+            <span>而今迈步从头越！</span>
+            <span>坐地日行八万里，</span>
+            <span>巡天遥看一千河。</span>
+            <span>文明其精神，</span>
+            <span>野蛮其体魄！</span>
+            <span>前途是光明的，</span>
+            <span>道路是曲折的。</span>
+        </div>
+    </h2>
+    <ul class="noteList">
+        <% mdFileList.forEach((item, index)=>{ %>
+            <% if(item.endsWith(".md")){ %>
+                <li>
+                    <a href="http://127.0.0.1:3000/note/<%= item  %>">
+                        <%= item %>
+                    </a>
+                </li>
+                <% } %>
+                    <% }) %>
+    </ul>
+    <script>
+        document.querySelector('body').addEventListener('mousemove', (e) => {
+            e.currentTarget.style.setProperty('--x', `${e.clientX}px`);
+            e.currentTarget.style.setProperty('--y', `${e.clientY}px`);
+        });
+
+        function setLinksPositions() {
+            document.querySelectorAll('a').forEach((a) => {
+                const bounding = a.getBoundingClientRect();
+
+                a.style.setProperty('--positionX', `${bounding.x}px`);
+                a.style.setProperty('--positionY', `${bounding.y}px`);
+            });
+        }
+
+        setInterval(function () {
+            const show = document.querySelector('span[data-show]')
+            const next = show.nextElementSibling || document.querySelector('span:first-child')
+            const up = document.querySelector('span[data-up]')
+
+            if (up) {
+                up.removeAttribute('data-up')
+            }
+
+            show.removeAttribute('data-show')
+            show.setAttribute('data-up', '')
+
+            next.setAttribute('data-show', '')
+        }, 2000)
+
+        window.addEventListener('load', setLinksPositions);
+        window.addEventListener('resize', setLinksPositions);
+    </script>
+</body>
+
+</html>

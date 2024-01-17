@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="http://127.0.0.1:3030/stylesheets/github.css">
+    <title>Document</title>
+</head>
+<body>
+    <pre><code>用户变量
+
+C:\Users\admin\AppData\Local\Programs\Python\Python35\Scripts\
+
+C:\Users\admin\AppData\Local\Programs\Python\Python35\
+
+</code></pre>
+<pre><code>    &quot;axios&quot;: &quot;^0.25.0&quot;,
+    &quot;core-js&quot;: &quot;^3.6.5&quot;,
+    &quot;element-ui&quot;: &quot;^2.15.6&quot;,
+    &quot;fuse.js&quot;: &quot;^6.5.3&quot;,
+    &quot;node-sass&quot;: &quot;^4.14.1&quot;,
+    &quot;normalize.css&quot;: &quot;^8.0.1&quot;,
+    &quot;vis-network&quot;: &quot;^9.1.0&quot;,
+    &quot;vue&quot;: &quot;^2.6.11&quot;,
+    &quot;vuex&quot;: &quot;^3.6.2&quot;
+</code></pre>
+<h1>DeepLearning学习笔记</h1>
+<p><img src="DeepLearning%E7%AC%94%E8%AE%B0.assets/image-20230529171122439.png" alt="image-20230529171122439"></p>
+<h2>常见单词</h2>
+<p>visualization : 可视化</p>
+<p>vector:向量</p>
+<h2>专业名词</h2>
+<p><strong>FSP矩阵</strong>：</p>
+<p><img src="DeepLearning%E7%AC%94%E8%AE%B0.assets/image-20230509163101699.png" alt="image-20230509163101699"></p>
+<h2>部分更改源码</h2>
+<h1>Pycharm</h1>
+<p>注释了白圈代码（）</p>
+<p><img src="DeepLearning%E7%AC%94%E8%AE%B0.assets/image-20230423101454537.png" alt="image-20230423101454537"></p>
+<h3>运行 Python 的四种方式</h3>
+<pre><code>原文：https://pycharm.iswbm.com/preface.html
+</code></pre>
+<p><img src="DeepLearning%E7%AC%94%E8%AE%B0.assets/image-20230420191152623.png" alt="image-20230420191152623"></p>
+<h3>通过指定参数，执行程序</h3>
+<p><img src="DeepLearning%E7%AC%94%E8%AE%B0.assets/image-20230420191334989.png" alt="image-20230420191334989"></p>
+<h3>超详细图文教你调试代码</h3>
+<p><img src="DeepLearning%E7%AC%94%E8%AE%B0.assets/image-20230420191421615.png" alt="image-20230420191421615"></p>
+<h3>程序结束了，照样可以调试</h3>
+<p><img src="DeepLearning%E7%AC%94%E8%AE%B0.assets/image-20230420191532910.png" alt="image-20230420191532910"></p>
+<h3>7 步实现远程代码调试</h3>
+<p><img src="DeepLearning%E7%AC%94%E8%AE%B0.assets/image-20230420191705812.png" alt="image-20230420191705812"></p>
+<h3>使用Vagrant 搭建一劳永逸开发环境</h3>
+<p><img src="DeepLearning%E7%AC%94%E8%AE%B0.assets/image-20230420191818920.png" alt="image-20230420191818920"></p>
+<h2>pycharm常用快捷键</h2>
+<h3>Pycharm的项目目录突然不见了解决之道</h3>
+<pre><code>3.1 第一种方法
+按project-&gt;mark directory as-&gt;cancel exclusion 就可以了
+
+3.2 第二种方法
+点击file-&gt;Settings-&gt;Project-&gt;Project structure 然后把邮编Excluded红色的Excluded Folders目录给删掉就好了～
+————————————————
+版权声明：本文为CSDN博主「alxe_made」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/alxe_made/article/details/84523989
+</code></pre>
+<h3>！！！调试相关的快捷键</h3>
+<ul>
+<li>Shift + F10：运行当前运行配置中的文件，等同于 Ctrl + Shift + F10</li>
+<li>Shift + F9：调试当前运行配置中的文件</li>
+<li>Ctrl + Shift + F10：运行 main 函数</li>
+<li>Alt + Shift + F10：弹出菜单，让你选择运行哪一个文件（你得提前设置好运行配置）</li>
+<li>Alt + Shift + F9：弹出菜单，让你选择调试哪一个文件（你得提前设置好运行配置）</li>
+<li>F8：单步执行，不进入函数</li>
+<li>F7：单步执行，进入函数</li>
+<li>Alt + Shift +F7：单步执行，只进入自己写的函数</li>
+<li>Shift + F8：跳出函数体</li>
+<li>Alt + F9：运行到光标所在行</li>
+<li>F9：运行到下一断点</li>
+<li>Ctrl + F2：终止调试程序</li>
+<li>Ctrl + F5：重新以调试模式运行</li>
+<li>Ctrl + Shift + F8：查看所有设置的断点</li>
+<li>Ctrl + F8：切换断点（有断点则取消断点，没有则加上断点）</li>
+<li>Alt + F8 计算表达式（可以更改变量值使其生效）</li>
+</ul>
+<h3>1、编辑（Editing）</h3>
+<p>Ctrl + Space  基本的代码完成（类、方法、属性）
+Ctrl + Alt + Space 快速导入任意类
+Ctrl + Shift + Enter  语句完成
+Ctrl + P  参数信息（在方法中调用参数）</p>
+<p>Ctrl + Q  快速查看文档</p>
+<p>F1  外部文档</p>
+<p>Shift + F1  外部文档，进入web文档主页</p>
+<p>Ctrl + Shift + Z --&gt; Redo 重做</p>
+<p>Ctrl + 鼠标  简介/进入代码定义
+Ctrl + F1  显示错误描述或警告信息
+Alt + Insert  自动生成代码
+Ctrl + O  重新方法
+Ctrl + Alt + T  选中
+Ctrl + /  行注释/取消行注释
+Ctrl + Shift + /  块注释
+Ctrl + W  选中增加的代码块
+Ctrl + Shift + W  回到之前状态
+Ctrl + Shift + ]/[   选定代码块结束、开始
+Alt + Enter  快速修正
+Ctrl + Alt + L   代码格式化
+Ctrl + Alt + O  优化导入
+Ctrl + Alt + I  自动缩进
+Tab / Shift + Tab 缩进、不缩进当前行
+Ctrl+X/Shift+Delete  剪切当前行或选定的代码块到剪贴板
+Ctrl+C/Ctrl+Insert  复制当前行或选定的代码块到剪贴板
+Ctrl+V/Shift+Insert  从剪贴板粘贴
+Ctrl + Shift + V  从最近的缓冲区粘贴
+Ctrl + D 复制选定的区域或行
+Ctrl + Y  删除选定的行
+Ctrl + Shift + J 添加智能线
+Ctrl + Enter  智能线切割
+Shift + Enter  另起一行
+Ctrl + Shift + U 在选定的区域或代码块间切换
+Ctrl + Delete  删除到字符结束
+Ctrl + Backspace  删除到字符开始
+Ctrl + Numpad+/-  展开/折叠代码块（当前位置的：函数，注释等）
+Ctrl + shift + Numpad+/-  展开/折叠所有代码块
+Ctrl + F4  关闭运行的选项卡</p>
+<h3>2、查找/替换(Search/Replace)</h3>
+<p>F3  下一个
+Shift + F3  前一个
+Ctrl + R  替换
+Ctrl + Shift + F 或者连续2次敲击shift  全局查找{可以在整个项目中查找某个字符串什么的，如查找某个函数名字符串看之前是怎么使用这个函数的}
+Ctrl + Shift + R  全局替换</p>
+<h3>3、运行(Running)</h3>
+<p>Alt + Shift + F10  运行模式配置
+Alt + Shift + F9  调试模式配置
+Shift + F10  运行
+Shift + F9  调试
+Ctrl + Shift + F10  运行编辑器配置
+Ctrl + Alt + R  运行manage.py任务</p>
+<h3>4、调试(Debugging)</h3>
+<p>F8  跳过
+F7  进入
+Shift + F8  退出
+Alt + F9  运行游标
+Alt + F8  验证表达式
+Ctrl + Alt + F8  快速验证表达式
+F9  恢复程序
+Ctrl + F8  断点开关
+Ctrl + Shift + F8  查看断点</p>
+<h3>5、导航(Navigation)</h3>
+<p>Ctrl + N  跳转到类
+Ctrl + Shift + N  跳转到符号
+Alt + Right/Left  跳转到下一个、前一个编辑的选项卡
+F12  回到先前的工具窗口
+Esc  从工具窗口回到编辑窗口
+Shift + Esc  隐藏运行的、最近运行的窗口
+Ctrl + Shift + F4  关闭主动运行的选项卡
+Ctrl + G  查看当前行号、字符号
+Ctrl + E  当前文件弹出，打开最近使用的文件列表
+Ctrl+Alt+Left/Right  后退、前进
+Ctrl+Shift+Backspace  导航到最近编辑区域
+Alt + F1  查找当前文件或标识
+Ctrl+B / Ctrl+Click  跳转到声明
+Ctrl + Alt + B  跳转到实现
+Ctrl + Shift + I查看快速定义
+Ctrl + Shift + B跳转到类型声明
+Ctrl + U跳转到父方法、父类
+Alt + Up/Down跳转到上一个、下一个方法
+Ctrl + ]/[跳转到代码块结束、开始
+Ctrl + F12弹出文件结构
+Ctrl + H类型层次结构
+Ctrl + Shift + H方法层次结构
+Ctrl + Alt + H调用层次结构
+F2 / Shift + F2下一条、前一条高亮的错误
+F4 / Ctrl + Enter编辑资源、查看资源
+Alt + Home显示导航条F11书签开关
+Ctrl + Shift + F11书签助记开关
+Ctrl + #[0-9]跳转到标识的书签
+Shift + F11显示书签</p>
+<h3>6、搜索相关(Usage Search)</h3>
+<p>Alt + F7/Ctrl + F7文件中查询用法
+Ctrl + Shift + F7文件中用法高亮显示
+Ctrl + Alt + F7显示用法</p>
+<h3>7、重构(Refactoring)</h3>
+<p>F5复制F6剪切
+Alt + Delete安全删除
+Shift + F6重命名
+Ctrl + F6更改签名
+Ctrl + Alt + N内联
+Ctrl + Alt + M提取方法
+Ctrl + Alt + V提取属性
+Ctrl + Alt + F提取字段
+Ctrl + Alt + C提取常量
+Ctrl + Alt + P提取参数</p>
+<h3>8、控制VCS/Local History</h3>
+<p>Ctrl + K提交项目
+Ctrl + T更新项目
+Alt + Shift + C查看最近的变化
+Alt + BackQuote(’)VCS快速弹出</p>
+<h3>9、模版(Live Templates)</h3>
+<p>Ctrl + Alt + J当前行使用模版
+Ctrl +Ｊ插入模版</p>
+<h3>10、基本(General)</h3>
+<p>Alt + #[0-9]打开相应的工具窗口
+Ctrl + Alt + Y同步
+Ctrl + Shift + F12最大化编辑开关
+Alt + Shift + F添加到最喜欢
+Alt + Shift + I根据配置检查当前文件
+Ctrl + BackQuote(’)快速切换当前计划
+Ctrl + Alt + S　打开设置页
+Ctrl + Shift + A查找编辑器里所有的动作</p>
+<p>Ctrl + Tab在窗口间进行切换</p>
+<h2>Jupyter切换虚拟环境</h2>
+<p><img src="typora-user-images.assets/image-20230331204745432.png" alt="image-20230331204745432"></p>
+<h3>Jupyter Notebook 常用快捷键</h3>
+<h4>模式切换</h4>
+<p>当前 cell 侧边为蓝色时，表示此时为命令模式，按 Enter 切换为编辑模式
+当前 cell 侧边为绿色时，表示此时为编辑模式，按 Esc 切换为命令模式
+     两者的区别就是，在编辑状态下，可以在当前 cell 中写代码，但进行有些 jupyter 的快捷键操作就不管用。在命令模式下，可以进行 jupyter 相关的快捷操作。注意：仅对当前编辑框有效。</p>
+<h4>命令模式快捷键</h4>
+<p>F：查找和替换
+Ctrl-Enter：运行当前 cell
+Shift-Enter：运行当前 cell 并 跳转到下一 cell
+Alt-Enter：运行当前 cell 并在下方新建 cell
+Y：把当前 cell 内容转换为代码形式
+M：把当前 cell 内容转换为 markdown 形式
+1<del>6：把当前cell内容设置为标题 1</del>6 格式
+Shift+上下键：按住 Shift 进行上下键操作可复选多个 cell
+A：在上方新建 cell
+B：在下方新建 cell
+X/C/Shift-V/V：剪切/复制/上方粘贴/下方粘贴
+双击D：删除当前 cell
+Z：撤销删除
+S：保存 notebook
+L：为当前 cell 的代码添加行编号
+Shift-L：为所有 cell 的代码添加行编号
+Shift-M：合并所选 cell 或合并当前 cell 和下方的 cell
+双击I：停止 kernel
+双击0：重启 kernel</p>
+<p>ESC + F  搜索和替换</p>
+<h4>编辑模式快捷键</h4>
+<p>Tab：代码补全
+Ctrl-A：全选
+Ctrl-Z：撤销
+Ctrl-Home：将光标移至 cell 最前端
+Ctrl-End：将光标移至 cell 末端
+Ctrl+/ ：注释</p>
+<h4>Jupyter中的魔法函数 （edit mode）</h4>
+<ol>
+<li><p>%reset</p>
+<p> ​    删除当前 Jupyter 环境中的所有变量或名称。</p>
+</li>
+<li><p>%time</p>
+<p> ​    计算当前代码行的运行时长。</p>
+</li>
+<li><p>%timeit</p>
+<p> ​    计算当前代码行的平均运行时长（即在执行一个语句100000次(默认情况下)后，再给出运行最快3次的平均值。</p>
+</li>
+<li><p>%timeit</p>
+<p> ​    计算当前 cell 的代码运行时长。</p>
+</li>
+<li><p>%matplotlib0</p>
+<p> ​    显示绘图结果的风格，默认为 %matplotlib inline，是直接将图片显示在浏览器中，如果希望图片单独生成，可以使用 %matplotlib。</p>
+</li>
+<li><p>%load</p>
+<p> ​    加载本地 Python 文件或者网络中的 Python 文件，例如本地脚本文件的加载：%load ex.py。</p>
+</li>
+<li><p>%run</p>
+<p> ​    用于运行本地或网络中的 Python 文件，例如本地脚本文件的运行：%run ex.py。</p>
+</li>
+<li><p>%pwd</p>
+<p> ​    显示 Jupyter 当前的工作空间。</p>
+</li>
+<li><p>%hist</p>
+<p> ​    显示当前 Jupyter 中，所有运行过的历史代码。</p>
+</li>
+<li><p>%who</p>
+<p>​    显示当前 Jupyter 环境中的所有变量或名称。</p>
+</li>
+</ol>
+<h2>数据集处理</h2>
+<h3>cifar10</h3>
+<pre><code># 参考代码
+import numpy as np
+import cv2
+
+def unpickle(file):#打开cifar-10文件的其中一个batch（一共5个batch）
+    import pickle
+    with open(&quot;C:/Users/Chengguo/Desktop/py_study/Alexnet/cifar-10-batches-py/&quot;+file, &#39;rb&#39;) as fo:
+        dict = pickle.load(fo, encoding=&#39;bytes&#39;)
+    return dict
+
+data_batch=unpickle(&quot;data_batch_2&quot;)#打开cifar-10文件的data_batch_1
+cifar_data=data_batch[b&#39;data&#39;]#这里每个字典键的前面都要加上b
+cifar_label=data_batch[b&#39;labels&#39;]
+cifar_data=np.array(cifar_data)#把字典的值转成array格式，方便操作
+print(cifar_data.shape)#(10000,3072)
+cifar_label=np.array(cifar_label)
+print(cifar_label.shape)#(10000,)
+
+label_name=[&#39;airplane&#39;,&#39;automobile&#39;,&#39;brid&#39;,&#39;cat&#39;,&#39;deer&#39;,&#39;dog&#39;,&#39;frog&#39;,&#39;horse&#39;,&#39;ship&#39;,&#39;truck&#39;]
+
+def imwrite_images(k):#k的值可以选择1-10000范围内的值
+    for i in range(k):
+        image=cifar_data[i]
+        image=image.reshape(-1,1024)
+        r=image[0,:].reshape(32,32)#红色分量
+        g=image[1,:].reshape(32,32)#绿色分量
+        b=image[2,:].reshape(32,32)#蓝色分量
+        img=np.zeros((32,32,3))
+        #RGB还原成彩色图像
+        img[:,:,0]=r
+        img[:,:,1]=g
+        img[:,:,2]=b
+        cv2.imwrite(&quot;C:/Users/Chengguo/Desktop/py_study/Alexnet/cifar_pictures/&quot;+ &quot;NO.&quot;+str(i)+&quot;class&quot;+str(cifar_label[i])+str(label_name[cifar_label[i]])+&quot;.jpg&quot;,img)
+    print(&quot;%d张图片保存完毕&quot;%k)
+
+imwrite_images(100)
+
+# ————————————————
+# 版权声明：本文为CSDN博主「G果」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+# 原文链接：https://blog.csdn.net/weixin_42899627/article/details/108036641
+</code></pre>
+<h2>卷积神经网络的可视化</h2>
+<p>​	这是笔者第N+1次听到专家说，深度学习模型是“黑盒”。这个说法不能说他对，也不能说他错。但是这句话从专家那里说出来，感觉就有点不严谨了，想必专家应该长时间不在科研一线了...  对于某些类型的深度学习模型来说，确实通过可视化中间节点很难获取到直接判别的有效信息，但对于卷积神经网络来说，可不是这样子的。 因为卷积神经网络学习到的表示 learned representation 非常适合可视化。这很大程度上得益于卷积神经网络是基于视觉概念的表示。</p>
+<h3>目前卷积深度表示的可视化/解释方法</h3>
+<p>中间激活态/特征图可视化。也就是对卷积神经网络的中间输出特征图进行可视化，这有助于理解卷积神经网络连续的层如何对输入的数据进行展开变化，也有注意了解卷及神经网络每个过滤器的含义。 更深入的， 笔者曾经讲中间激活态结合‘注意力机制’进行联合学习，确实显著提高了算法的精度。
+空间滤波器组可视化。卷积神经网络学习的实质可以简单理解为学习一系列空间滤波器组的参数。可视化滤波器组有助于理解视觉模式/视觉概念。 更深入的，笔者曾经思考过，如何才能引导dropout趋向各项同性空间滤波器。因为从视觉感知对信息的捕捉效果来看，更倾向于捕捉高频成分，诸如边缘特征、纹理等。
+原始图像中各组分贡献热力图。我们都知道，卷积神经网络是基于感受野以及感受野再次组合进行特征提取的。但是我们需要了解图像中各个部分对于目标识别的贡献如何？这里将会介绍一种hotmap的形式，判断图像中各个成分对识别结果的贡献度概率。</p>
+<h3>中间特征图可视化</h3>
+<p><img src="https://img-blog.csdnimg.cn/20181218110516898.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NoZW56aWhlbmcx,size_1,color_FFFFFF,t_70" alt="img"></p>
+<p>可视化卷积神经网络的中间层输出，可以让我们看到输入图像经过learned filters之后的输出结果(更习惯称之为中间激活态/特征图)。卷积神经网络每层都包含了N个learned filters，所以每个中间层的输出将会是N张特征图（每一个滤波器filters都会对输入图像进行滤波，N也成为中间特征图的深度/通道）。一般来说，每个通道特征图都对应着独立的特征，这些特征恰恰就是对应的learned filter 赋予的。通过对所有通道特征图进行可视化，我们可以很容易判断每个滤波器的性能。</p>
+<p>我们使用 ‘特征层次分析、视觉特征语义探索’ 中训练好的卷积神经网络进行测试[用于特征图/卷积核/响应图可视化的网络 ]，其神经网络结构为：
+<img src="https://img-blog.csdnimg.cn/20181218102002745.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NoZW56aWhlbmcx,size_1,color_FFFFFF,t_70" alt="img"></p>
+<pre><code>model = load_model(&#39;cats_and_dogs_small_2.h5&#39;)        # 加载已经训练好的模型
+img_path = &#39;cats_dags_small/test/cats/cat.1535.jpg&#39;   # 提取实验图像
+img = image.load_img(img_path, target_size = (150,150))
+img_tensor = image.img_to_array(img)
+img_tensor = np.expand_dims(img_tensor, axis = 0)     # 图像维度拓展，输入网络 （1,150,150,3）
+img_tensor /= 255.
+ 
+#-----------------------------------
+layer_outputs = [ layer.output for layer in model.layers[0:8] ] # 获取模型节点输出
+# 构造节点测试模型，对实验数据进行测试
+activation_model = models.Model(inputs = model.input, outputs = layer_outputs)  # 8个激活模型
+activations = activation_model.predict(img_tensor) # 8个激活层输出，即8个层输出的特征图
+ 
+layer_names = []  # 读取各个输出节点对应的层名称
+for layer in model.layers[0:8]:
+    layer_names.append(layer.name)    
+images_per_row = 16 # 每行现实的特征图数量
+for layer_name, layer_activation in zip(layer_names, activations): # 每层名称+特征图输出
+    n_features = layer_activation.shape[-1]
+    size = layer_activation.shape[1] # feature_map = [1, size, size, n_features]
+    n_cols = n_features // images_per_row
+    display_grid = np.zeros((size * n_cols, images_per_row * size))
+    
+    for col in range (n_cols):
+        for row in range(images_per_row):
+            channel_image = layer_activation[:,:,col*images_per_row + row]
+            channel_image = np.clip(channel_image, 0, 255).astype(&#39;uint8&#39;)
+            display_grid[col * size : (col + 1) * size,
+                         row * size : (row + 1) * size] = channel_image  
+            # Display the grid
+            scale = 1. / size
+            plt.figure(figsize=(scale * display_grid.shape[1],
+                                scale * display_grid.shape[0]))
+            plt.title(layer_name)
+            plt.imshow(display_grid, aspect=&#39;auto&#39;, cmap=&#39;viridis&#39;)        
+</code></pre>
+<p>以第1-4卷积层为例，网络中间输出的激活态为：</p>
+<p><img src="typora-user-images.assets/image-20230331195514576.png" alt="image-20230331195514576"></p>
+<h3>总结：</h3>
+<p>通过检查卷积滤波器的中间输出，我们发现：靠近底层的CNN提取的是基础视觉特征，这些视觉特征是很容易被理解的，也是非常通用的。 靠近顶层的CNN提取的是综合高级语义信息，这些信息是对底层视觉特征的综合，更加有利于对识别、分类任务等决策任务形成贡献。
+随着层数的加深，中间特征层变得越来越抽象，难以用视觉信息直观进行解释，但是明显可以感受到，确实在表征高层次的视觉概念。例如，响应图大的地方往往对应猫的耳朵、胡须、眼睛等生理结构。
+顶层的输出告诉我们一个道理，其实CNN学习到的特征图并不都是有用的。随着CNN越深，有效的特征逐渐变得稀疏化。很多特征图[其对应的就是卷积滤波器]是没有效果的。这个时候就需要我们引入‘attention’的机制去弱化贡献度小的特征图，强化贡献度大的特征图。这也是我硕士期间一直努力的方向。
+在keras中，Model模型和Sequential模型一样，可以将特定输入映射为特定输出。不同的是，Model模型允许有多个输出。
+结合人体视觉系统更好解释。我们凭借记忆记住的猫狗等图像，仅仅是一个概念图/抽象图。很难画出像摄像机图像一样真实，这是因为我们大脑早就学会了将输入信息完全抽象化，进而转为更高层次的视觉概念，虑除掉不相关的视觉细节。</p>
+<ol start="4">
+<li><p>组分贡献度可视化
+   由卷积神经网络构成的深度框架，如VGG16、VGG19、Xception、ResNet101等，在目标识别任务中取得了非常好的结果。特别的，我们知道卷积操作是存在感受野的，那么很自然的，我们想知道每个感受野对最终识别/分类/定位等决策结果的贡献程度。本节主要可视化这个过程，该过程也称之为类激活图[1]（CAM，Class Activation Map）。</p>
+<p>   该方法[1]综述为: 给定一张图像，对于一个卷积层的输出特征图，用类别相对于通道的梯度对这个特征图中的每个通告进行加权。其实质就是，用‘每个通道对类别的重要程度’对‘输入图像对不同通道的激活强度’的空间图进行加权，从而得到‘输入图像对类别的激活强度’的空间图。</p>
+<p>   举例来说，对于输入到猫狗分类卷积神经网络的一张图像，CAM可视化可以生成类别‘猫’的热力图，该图热力图颜色深浅表示感受野对决策为&#39;猫&#39;的贡献；当然CAM也会生成类别为‘狗’的热力图。毕竟卷积神经网络通过概率进行决策。</p>
+</li>
+</ol>
+<p>  <img src="typora-user-images.assets/image-20230331195617924.png" alt="image-20230331195617924"></p>
+<p>结论：</p>
+<p>通过实验我们可以发现，之所以算法可以定位到目标，或者是识别出这是一只贵族犬，原因在于狗头部贡献了大量的信息。</p>
+<h2>一些概念</h2>
+<h3>BatchNorm2d</h3>
+<p><img src="https://img-blog.csdnimg.cn/20200816170032439.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM5Nzc3NTUw,size_16,color_FFFFFF,t_70#pic_center" alt="img"></p>
+<p><img src="https://img-blog.csdnimg.cn/20200816170135982.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM5Nzc3NTUw,size_16,color_FFFFFF,t_70#pic_center" alt="img"></p>
+<p><img src="https://img-blog.csdnimg.cn/20200816170216521.png#pic_center" alt="img"></p>
+<h3>函数参数讲解：</h3>
+<pre><code>BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+</code></pre>
+<p>1.num_features：一般输入参数的shape为batch_size<em>num_features</em>height*width，即为其中特征的数量，即为输入BN层的通道数；
+2.eps：分母中添加的一个值，目的是为了计算的稳定性，默认为：1e-5,避免分母为0；
+3.momentum：一个用于运行过程中均值和方差的一个估计参数（我的理解是一个稳定系数，类似于SGD中的momentum的系数）；
+4.affine：当设为true时，会给定可以学习的系数矩阵gamma和beta
+一般来说pytorch中的模型都是继承nn.Module类的，都有一个属性trainning指定是否是训练状态，训练状态与否将会影响到某些层的参数是否是固定的，比如BN层或者Dropout层。通常用model.train()指定当前模型model为训练状态,model.eval()指定当前模型为测试状态。
+同时，BN的API中有几个参数需要比较关心的，一个是affine指定是否需要仿射，还有个是track_running_stats指定是否跟踪当前batch的统计特性。容易出现问题也正好是这三个参数：trainning，affine，track_running_stats。
+其中的affine指定是否需要仿射，也就是是否需要上面算式的第四个，如果affine=False则γ=1,β=0，并且不能学习被更新。一般都会设置成affine=True。
+trainning和track_running_stats，track_running_stats=True表示跟踪整个训练过程中的batch的统计特性，得到方差和均值，而不只是仅仅依赖与当前输入的batch的统计特性。相反的，如果track_running_stats=False那么就只是计算当前输入的batch的统计特性中的均值和方差了。当在推理阶段的时候，如果track_running_stats=False，此时如果batch_size比较小，那么其统计特性就会和全局统计特性有着较大偏差，可能导致糟糕的效果。
+如果BatchNorm2d的参数track_running_stats设置False,那么加载预训练后每次模型测试测试集的结果时都不一样；track_running_stats设置为True时，每次得到的结果都一样。
+running_mean和running_var参数是根据输入的batch的统计特性计算的，严格来说不算是“学习”到的参数，不过对于整个计算是很重要的。BN层中的running_mean和running_var的更新是在forward操作中进行的，而不是在optimizer.step()中进行的，因此如果处于训练中泰，就算不进行手动step()，BN的统计特性也会变化。</p>
+<pre><code>model.train() #处于训练状态
+for data , label in self.dataloader:
+    pred =model(data)  #在这里会更新model中的BN统计特性参数，running_mean,running_var
+    loss=self.loss(pred,label)
+    #就算不进行下列三行，BN的统计特性参数也会变化
+    opt.zero_grad()
+    loss.backward()
+    opt.step()
+</code></pre>
+<p>这个时候，要用model.eval()转到测试阶段，才能固定住running_mean和running_var，有时候如果是先预训练模型然后加载模型，重新跑测试数据的时候，结果不同，有一点性能上的损失，这个时候基本上是training和track_running_stats设置的不对。
+如果使用两个模型进行联合训练，为了收敛更容易控制，先预训练好模型model_A，并且model_A内还有若干BN层，后续需要将model_A作为一个inference推理模型和model_B联合训练，此时希望model_A中的BN的统计特性量running_mean和running_var不会乱变化，因此就需要将model_A.eval()设置到测试模型，否则在trainning模式下，就算是不去更新模型的参数，其BN都会变化，这将导致和预期不同的结果</p>
+<h3>上采样、下采样、卷积、池化</h3>
+<h4>上采样</h4>
+<p>概念
+上采样（upsampling）：又名放大图像、图像插值；</p>
+<p>主要目的是放大原图像,从而可以显示在更高分辨率的显示设备上；</p>
+<p>上采样有3种常见的方法：双线性插值(bilinear)，反卷积(Transposed Convolution)，反池化(Unpooling)；</p>
+<p>原理
+上采样原理：</p>
+<p>图像放大几乎都是采用内插值方法，即在原有图像像素的基础上在像素点之间采用合适的插值算法插入新的元素。</p>
+<p>插值算法还包括了传统插值，基于边缘图像的插值，还有基于区域的图像插值。</p>
+<h4>下采样</h4>
+<p>概念
+下采样（subsampled）：又名降采样、缩小图像；</p>
+<p>主要目的有两个：1、使得图像符合显示区域的大小；2、生成对应图像的缩略图；</p>
+<p>其实下采样就是池化；</p>
+<p>原理
+下采样原理：</p>
+<p>对于一副图像Ⅰ尺寸为M<em>N，对其进行s倍下采样，即得到（M/s）</em>（N/s）尺寸的分辨率图像，当然，s应该是M和N的公约数才可以；</p>
+<p>如果考虑是矩阵形式的图像，就是把原始图像s*s窗口内的图像变成一个像素，这个像素点的值就是窗口内所有像素的均值或者最大值(也就是Pooling池化操作等)。</p>
+<p>对图像的缩放操作并不能带来更多关于该图像的信息, 因此图像的质量将不可避免地受到影响。然而，确实有一些缩放方法能够增加图像的信息，从而使得缩放后的图像质量超过原图质量的。</p>
+<p>Pk = Σ Ii / s2</p>
+<p>其实下采样就是池化。</p>
+<p>采样层是使用 pooling 的相关技术来实现的，目的就是用来降低特征的维度并保留有效信息，一定程度上避免过拟合；</p>
+<p>但是pooling的目的不仅仅是这些，他的目的是保持旋转、平移、伸缩不变形等。采样有最大值采样，平均值采样，求和区域采样和随机区域采样等；</p>
+<p>池化也是这样的，比如最大值池化，平均值池化，随机池化，求和区域池化等。</p>
+<h4>卷积</h4>
+<p>一次卷积运算指的是：如下图，当我们有一个过滤器(黄色矩阵块，又称卷积核，也是矩阵)；</p>
+<p>移动卷积核，将这个方块对应要处理的输入矩阵的一部分，位置一一对应相乘，然后把结果再相加得到一个数；</p>
+<p><img src="https://img-blog.csdnimg.cn/20210304154729504.gif" alt="img"></p>
+<p>上面这幅图是对一个5<em>5的矩阵进行3</em>3的矩阵的卷积；</p>
+<p>那么就从左上角到右下角，生成卷积之后的矩阵的大小是(5-3+1)*(5-3+1)的矩阵，生成之后的矩阵的元素值，是之前的两个矩阵对应元素的乘积之和；</p>
+<h4>池化</h4>
+<p>池化最直观的作用便是降维，常见的池化有最大池化、平均池化和随机池化；池化层不需要训练参数；</p>
+<p>最大池化可以获取局部信息，可以更好保留纹理上的特征；如果不用观察物体在图片中的具体位置，只关心其是否出现，则使用最大池化效果比较好。
+平均池化往往能保留整体数据的特征，能凸出背景的信息。
+随机池化中元素值大的被选中的概率也大，但不是像最大池化总是取最大值。随机池化一方面最大化地保证了Max值的取值，一方面又确保了不会完全是max值起作用，造成过度失真；除此之外，其可以在一定程度上避免过拟合。
+如下图，左侧是4<em>4的矩阵，要进行大小为2</em>2的池化；</p>
+<p>Max pooling，即对邻域内特征点只求最大值；</p>
+<p>Average pooling，即对邻域内特征点只求平均值；
+<img src="https://img-blog.csdnimg.cn/20210515102542168.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Rpbmd6aGl5aQ==,size_16,color_FFFFFF,t_70" alt="img"></p>
+<h3>Loss Function</h3>
+<p><img src="DeepLearning%E7%AC%94%E8%AE%B0.assets/image-20230422162449032.png" alt="image-20230422162449032"></p>
+<h3>正则化（Regularization）</h3>
+<pre><code>http://t.csdn.cn/z3NhQ
+</code></pre>
+<p><img src="DeepLearning%E7%AC%94%E8%AE%B0.assets/image-20230703193823795.png" alt="image-20230703193823795"></p>
+<h3>有监督、半监督、无监督、弱监督、自监督</h3>
+<p>有监督：用有标签的数据训练；
+无监督：用无标签的数据训练；
+半监督：同时用有标签和无标签的数据进行训练。最近非常火热，此领域的发展也非常迅速，先前通常是两阶段的训练，先用（较小规模的）有标签数据训练一个Teacher模型，再用这个模型对（较大规模的）无标签数据预测伪标签，作为Student模型的训练数据；目前已经有很多直接end-to-end地训练，大大减少半监督训练的工作；
+自监督：在无标注数据上训练，通过一些方法让模型学习到数据的inner representation，再接下游任务，例如加一个mlp作为分类器等。但接了下游任务之后还是需要在特定的有标签数据上finetune，只是有时候可以选择把前面的层完全固定，只finetune后面接的网络的参数。
+弱监督：用包含噪声的有标签数据训练。</p>
+<pre><code>————————————————
+版权声明：本文为CSDN博主「dwqy11」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/dwqy11/article/details/113736860
+</code></pre>
+<h3>感受野(Receptive Field)</h3>
+<h4>一、定义</h4>
+<p>在卷积神经网络中,**感受野(Receptive Field)**是指特征图上的某个点能看到的输入图像的区域,即特征图上的点是由输入图像中感受野大小区域的计算得到的</p>
+<p><img src="DeepLearning%E7%AC%94%E8%AE%B0.assets/image-20231008141749765.png" alt="image-20231008141749765"></p>
+<p>神经元感受野的值越大表示其能接触到的原始图像范围就越大，也意味着它可能蕴含更为全局，语义层次更高的特征；相反，值越小则表示其所包含的特征越趋向局部和细节。因此<strong>感受野的值可以用来大致判断每一层的抽象层次</strong>.[1]</p>
+<h2>语句解释</h2>
+<h3>Vis</h3>
+<p>拿到已经训练好的automl数据</p>
+<p><img src="DeepLearning%E7%AC%94%E8%AE%B0.assets/image-20230421145814765.png" alt="image-20230421145814765"></p>
+<p><strong>issubset()</strong> </p>
+<p>issubset() 方法用于判断集合的所有元素是否都包含在指定集合中，如果是则返回 True，不是则返回 False。</p>
+<pre><code>判断集合A是否为集合B的子集
+z=A.issubset(B)
+</code></pre>
+<p><strong>open() 函数</strong></p>
+<pre><code>file = open(file_name [, mode=&#39;r&#39; [ , buffering=-1 [ , encoding = None ]]])
+此格式中，用 [] 括起来的部分为可选参数，即可以使用也可以省略。其中，各个参数所代表的含义如下：
+
+file：表示要创建的文件对象。
+file_name：要创建或打开文件的文件名称，该名称要用引号（单引号或双引号都可以）括起来。需要注意的是，如果要打开的文件和当前执行的代码文件位于同一目录，则直接写文件名即可；否则，此参数需要指定打开文件所在的完整路径。
+mode：可选参数，用于指定文件的打开模式。可选的打开模式如表 1 所示。如果不写，则默认以只读（r）模式打开文件。
+buffering：可选参数，用于指定对文件做读写操作时，是否使用缓冲区（本节后续会详细介绍）。
+encoding：手动设定打开文件时所使用的编码格式，不同平台的 ecoding 参数值也不同，以 Windows 为例，其默认为 cp936（实际上就是 GBK 编码）。
+</code></pre>
+<p><img src="DeepLearning%E7%AC%94%E8%AE%B0.assets/image-20230420195432046.png" alt="image-20230420195432046"></p>
+<p><img src="DeepLearning%E7%AC%94%E8%AE%B0.assets/image-20230420195302609.png" alt="image-20230420195302609"></p>
+
+</body>
+</html>

@@ -11,6 +11,7 @@ var imgRouter = require('./routes/images.ts');
 var sqlRouter = require('./routes/mysql.ts');
 var visRouter = require('./routes/vis.ts');
 var terrariaRouter = require('./routes/terraria.ts');
+var noteRouter = require("./routes/note.ts");
 
 var app = express();
 // 使用 cors 中间件
@@ -33,6 +34,7 @@ app.use('/images', imgRouter);
 app.use('/mysql', sqlRouter);
 app.use('/vis', visRouter);
 app.use('/terraria', terrariaRouter);
+app.use("/note", noteRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
