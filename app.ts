@@ -34,7 +34,7 @@ app.use('/images', imgRouter);
 app.use('/mysql', sqlRouter);
 app.use('/vis', visRouter);
 app.use('/terraria', terrariaRouter);
-app.use("/note", noteRouter);
+app.use("/notes", noteRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

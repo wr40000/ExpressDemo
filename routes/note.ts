@@ -7,7 +7,7 @@ const browserSync = require("browser-sync");
 const hljs = require("highlight"); // 引入highlight.js
 var router = express.Router();
 
-const notesPath = path.join("F:\\", "notes");
+const notesPath = path.resolve(__dirname, "../public/notes");
 const markdownFiles = fs.readdirSync(notesPath);
 marked.setOptions({
   highlight: function (code, lang) {
@@ -38,7 +38,7 @@ router.get("/", function (req, res, next) {
 router.get("/:filename", (req, res) => {
   const filename = req.params.filename;
   const filenameExcludemd = filename.slice(0, -3);
-  const markdownPath = path.join("F:\\", "notes", `${filename}`);
+  const markdownPath = path.join(path.resolve(__dirname, "../public/notes"), `${filename}`);
   // 检查文件是否存在
   if (fs.existsSync(markdownPath)) {
     const markdownContent = fs.readFileSync(markdownPath, "utf-8");
