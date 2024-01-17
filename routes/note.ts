@@ -1,6 +1,6 @@
 var express = require("express");
 const ejs = require("ejs");
-const marked = require("marked");
+var marked = require("marked");
 const fs = require("fs");
 const path = require("path");
 const browserSync = require("browser-sync");
